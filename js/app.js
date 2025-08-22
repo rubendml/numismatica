@@ -326,7 +326,7 @@ async function sincronizarConGitHub() {
   // ==========================================
 
   // Validación de configuración
-  if (TOKEN === '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') {
+  if (TOKEN === 'TU_TOKEN_AQUI') {
     alert('❌ ERROR: Debes configurar tu token de GitHub en la función sincronizarConGitHub().');
     console.error('Configuración requerida: TOKEN, OWNER, REPO');
     return;
@@ -387,5 +387,6 @@ async function sincronizarConGitHub() {
     alert('❌ No se pudo conectar con GitHub. Revisa tu conexión o el token.');
   }
 }
+
 
 
