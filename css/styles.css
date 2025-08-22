@@ -1,0 +1,14 @@
+/* Personalización adicional si Tailwind no cubre todo */
+body {
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+}
+
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}

@@ -1,0 +1,132 @@
+[
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2014,
+    "grado": "VG",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": null,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2015,
+    "grado": "F",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": null,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2016,
+    "grado": "F",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": 693.79,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2020,
+    "grado": "VF",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": 555.03,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2021,
+    "grado": "VF",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": 1110.07,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2022,
+    "grado": "VF",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": 1942.62,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "50 Pesos",
+    "año": 2023,
+    "grado": "XF",
+    "cantidad": 1,
+    "precioCompra": 500,
+    "precioEstimado": null,
+    "referencia": "KM# 295"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "100 Pesos",
+    "año": 2023,
+    "grado": "F",
+    "cantidad": 1,
+    "precioCompra": 1000,
+    "precioEstimado": null,
+    "referencia": "KM# 296"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "100 Pesos",
+    "año": 2024,
+    "grado": "AU",
+    "cantidad": 1,
+    "precioCompra": 1000,
+    "precioEstimado": null,
+    "referencia": "KM# 296"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "200 Pesos",
+    "año": 2024,
+    "grado": "XF",
+    "cantidad": 1,
+    "precioCompra": 1000,
+    "precioEstimado": null,
+    "referencia": "KM# 297"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "500 Pesos",
+    "año": 2023,
+    "grado": "AU",
+    "cantidad": 1,
+    "precioCompra": 2000,
+    "precioEstimado": 3700.22,
+    "referencia": "KM# 298"
+  },
+  {
+    "tipo": "Moneda",
+    "denominacion": "1000 Pesos",
+    "año": 2023,
+    "grado": "XF",
+    "cantidad": 1,
+    "precioCompra": 2000,
+    "precioEstimado": 1311.95,
+    "referencia": "KM# 299"
+  },
+  {
+    "tipo": "Billete",
+    "denominacion": "20,000 Pesos",
+    "año": 2021,
+    "grado": "AU",
+    "cantidad": 1,
+    "precioCompra": 20000,
+    "precioEstimado": null,
+    "referencia": "P# 461"
+  }
+]
