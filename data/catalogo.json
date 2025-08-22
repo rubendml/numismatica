@@ -2759,6 +2759,17 @@
     "denominacion": "$ 100,000",
     "anio": 2017,
     "material": "Algodón al 100%",
+    "tema": "General",
+    "rareza": "Común",
+    "observaciones": "",
+    "valor": 100000
+  },
+  {
+    "id": "custom-billete-100000-2018",
+    "tipo": "Billete",
+    "denominacion": "$100,000",
+    "anio": 2018,
+    "material": "fibra de algodón 100%",
     "tema": "Biodiversidad colombiana y el Valle de Cocora",
     "rareza": "Común",
     "observaciones": "",
