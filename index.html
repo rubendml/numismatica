@@ -7,12 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="js/data.js" defer></script>
+  <script src="js/storage.js" defer></script>
   <script src="js/app.js" defer></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .card { transition: transform 0.2s; }
-    .card:hover { transform: translateY(-4px); }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-50 text-gray-800">
 
@@ -27,27 +24,60 @@
   <!-- Tabs -->
   <div class="container mx-auto px-4 mt-6">
     <div class="flex border-b border-gray-300 mb-6">
-      <button class="px-6 py-3 font-semibold text-amber-600 border-b-2 border-amber-600" onclick="showSection('monedas')">Monedas</button>
-      <button class="px-6 py-3 text-gray-600 hover:text-amber-600" onclick="showSection('billetes')">Billetes</button>
-      <button class="px-6 py-3 text-gray-600 hover:text-amber-600" onclick="showSection('coleccion')">Mi Colección</button>
+      <button class="tab-active" onclick="showSection('catalogo')">Catálogo</button>
+      <button class="tab-inactive" onclick="showSection('coleccion')">Mi Colección</button>
+      <button class="tab-inactive" onclick="showSection('add')">Añadir Pieza</button>
     </div>
 
-    <!-- Sección: Monedas -->
-    <div id="section-monedas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Cargado dinámicamente -->
-    </div>
-
-    <!-- Sección: Billetes -->
-    <div id="section-billetes" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Sección: Catálogo -->
+    <div id="section-catalogo" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- Cargado dinámicamente -->
     </div>
 
     <!-- Sección: Mi Colección -->
     <div id="section-coleccion" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Mi Colección (Rubén)</h2>
+      <h2 class="text-2xl font-bold mb-4">Mi Colección</h2>
       <div id="coleccion-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Cargado desde coleccion_ruben.json -->
+        <!-- Cargado desde localStorage -->
       </div>
+    </div>
+
+    <!-- Sección: Añadir Pieza -->
+    <div id="section-add" class="hidden mt-6">
+      <h2 class="text-2xl font-bold mb-4">Añadir Nueva Pieza</h2>
+      <form id="add-form" class="bg-white p-6 rounded-lg shadow">
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Denominación</span>
+          <select id="add-denominacion" class="mt-1 block w-full border-gray-300 rounded-md" required></select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Año</span>
+          <input type="number" id="add-anio" class="mt-1 block w-full border-gray-300 rounded-md" required>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Estado (Grado)</span>
+          <select id="add-grado" class="mt-1 block w-full border-gray-300 rounded-md" required>
+            <option value="PO">PO (Pobre)</option>
+            <option value="FR">FR (Frágil)</option>
+            <option value="VG">VG (Muy Bueno)</option>
+            <option value="F">F (Bueno)</option>
+            <option value="VF">VF (Muy Fino)</option>
+            <option value="XF">XF (Extra Fino)</option>
+            <option value="AU">AU (Casi Acuñación)</option>
+            <option value="BU">BU (Brillante de Ley)</option>
+            <option value="UNC">UNC (Sin Circulación)</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Cantidad</span>
+          <input type="number" id="add-cantidad" class="mt-1 block w-full border-gray-300 rounded-md" min="1" value="1" required>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Precio de Compra (COP)</span>
+          <input type="number" id="add-precio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Ej: 500" required>
+        </label>
+        <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-md hover:bg-amber-700">Añadir a Colección</button>
+      </form>
     </div>
   </div>
 

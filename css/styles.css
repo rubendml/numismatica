@@ -1,0 +1,5 @@
+body { font-family: 'Inter', sans-serif; }
+.card { transition: transform 0.2s; }
+.card:hover { transform: translateY(-4px); }
+.tab-active { @apply px-6 py-3 font-semibold text-amber-600 border-b-2 border-amber-600; }
+.tab-inactive { @apply px-6 py-3 text-gray-600 hover:text-amber-600; }

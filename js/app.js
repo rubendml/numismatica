@@ -1,95 +1,99 @@
 function showSection(section) {
-  document.getElementById("section-monedas").classList.toggle("hidden", section !== "monedas");
-  document.getElementById("section-billetes").classList.toggle("hidden", section !== "billetes");
+  document.getElementById("section-catalogo").classList.toggle("hidden", section !== "catalogo");
   document.getElementById("section-coleccion").classList.toggle("hidden", section !== "coleccion");
+  document.getElementById("section-add").classList.toggle("hidden", section !== "add");
 
-  // Cambiar estilo de botones
   const tabs = document.querySelectorAll("header button");
   tabs.forEach(btn => {
-    btn.classList.remove("tab-active");
-    btn.classList.add("tab-inactive");
+    btn.className = btn.textContent === "Catálogo" ? "tab-inactive" :
+                   btn.textContent === "Mi Colección" ? "tab-inactive" : "tab-inactive";
   });
 
-  const activeTab = document.querySelector(`button[onclick="showSection('${section}')"]`);
-  if (activeTab) activeTab.classList.add("tab-active");
+  document.querySelector(`button[onclick="showSection('${section}')"]`).className = "tab-active";
+
+  if (section === "catalogo") renderCatalogo();
+  if (section === "coleccion") renderColeccion();
+  if (section === "add") populateAddForm();
 }
 
-function renderItems() {
-  const monedasContainer = document.getElementById("section-monedas");
-  const billetesContainer = document.getElementById("section-billetes");
-  const coleccionContainer = document.getElementById("coleccion-items");
+function renderCatalogo() {
+  const container = document.getElementById("section-catalogo");
+  container.innerHTML = "";
 
-  // Limpiar contenedores
-  monedasContainer.innerHTML = "";
-  billetesContainer.innerHTML = "";
-  coleccionContainer.innerHTML = "";
-
-  // Renderizar monedas
-  DATA.monedas.forEach(item => {
+  CATALOGO.forEach(item => {
+    const tiene = getColeccion().some(p => p.catalogoId === item.id);
     const card = document.createElement("div");
-    card.className = "card bg-white rounded-xl shadow-md overflow-hidden border border-gray-200";
+    card.className = `bg-white rounded-xl shadow-md overflow-hidden border-4 ${tiene ? "border-green-500" : "border-gray-200"} card`;
     card.innerHTML = `
       <div class="p-5">
-        <h3 class="text-xl font-bold text-amber-700">${item.denominacion}</h3>
-        <p class="text-sm text-gray-500">${item.anios}</p>
-        <ul class="mt-3 space-y-1 text-sm text-gray-700">
-          <li><strong>Material:</strong> ${item.material}</li>
-          <li><strong>Diámetro:</strong> ${item.diametro}</li>
-          <li><strong>Peso:</strong> ${item.peso}</li>
-          <li><strong>Tema:</strong> ${item.tema}</li>
-          <li><strong>Rareza:</strong> 
-            <span class="px-2 py-1 text-xs rounded-full ${
-              item.rareza === 'Común' ? 'bg-green-100 text-green-800' :
-              item.rareza === 'Menos común' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-red-100 text-red-800'
-            }">${item.rareza}</span>
-          </li>
-        </ul>
-        <a href="${item.imagen}" target="_blank" class="mt-4 inline-block text-amber-600 text-sm hover:underline">Ver en Numista →</a>
+        <div class="flex justify-between items-start">
+          <h3 class="text-xl font-bold ${tiene ? "text-green-700" : "text-gray-800"}">${item.denominacion}</h3>
+          <span class="px-3 py-1 text-sm font-semibold rounded-full ${tiene ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}">${tiene ? "✅ Tienes" : "❌ Falta"}</span>
+        </div>
+        <p class="text-sm text-gray-500">${item.años}</p>
+        <p class="text-sm text-gray-600"><strong>Tema:</strong> ${item.tema}</p>
+        <p class="text-sm text-gray-600"><strong>Rareza:</strong> ${item.rareza}</p>
+        <p class="text-sm text-gray-600"><strong>Material:</strong> ${item.material}</p>
       </div>
     `;
-    monedasContainer.appendChild(card);
+    container.appendChild(card);
   });
+}
 
-  // Renderizar billetes
-  DATA.billetes.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "card bg-white rounded-xl shadow-md overflow-hidden border border-gray-200";
-    card.innerHTML = `
-      <div class="p-5">
-        <h3 class="text-xl font-bold text-blue-700">${item.denominacion}</h3>
-        <p class="text-sm text-gray-500">${item.anios}</p>
-        <ul class="mt-3 space-y-1 text-sm text-gray-700">
-          <li><strong>Material:</strong> ${item.material}</li>
-          <li><strong>Tamaño:</strong> ${item.tamaño}</li>
-          <li><strong>Serie:</strong> ${item.serie}</li>
-          <li><strong>Tema:</strong> ${item.tema}</li>
-        </ul>
-        <a href="${item.imagen}" target="_blank" class="mt-4 inline-block text-blue-600 text-sm hover:underline">Ver en Numista →</a>
-      </div>
-    `;
-    billetesContainer.appendChild(card);
-  });
+function renderColeccion() {
+  const container = document.getElementById("coleccion-items");
+  container.innerHTML = "";
+  const coleccion = getColeccion();
 
-  // Renderizar colección
-  DATA.coleccion.forEach(item => {
+  if (coleccion.length === 0) {
+    container.innerHTML = "<p class='text-gray-500'>No tienes ninguna pieza aún. Ve a 'Añadir Pieza'.</p>";
+    return;
+  }
+
+  coleccion.forEach((item, index) => {
+    const catalogoItem = CATALOGO.find(c => c.id === item.catalogoId);
+    const denominacion = catalogoItem ? catalogoItem.denominacion : item.denominacion;
+
     const card = document.createElement("div");
     card.className = "bg-white p-4 rounded-lg shadow border-l-4 border-amber-500";
     card.innerHTML = `
-      <h4 class="font-semibold">${item.tipo}: ${item.denominacion} (${item.año})</h4>
-      <p class="text-sm text-gray-600">Cantidad: ${item.cantidad} | Estado: ${item.grado}</p>
-      <p class="text-sm text-green-600">Compra: $${item.precioCompra.toLocaleString()} COP</p>
-      ${item.precioEstimado ? `<p class="text-sm text-blue-600">Estimado: $${item.precioEstimado.toLocaleString()} COP</p>` : ''}
+      <div class="flex justify-between">
+        <div>
+          <h4 class="font-semibold">${denominacion} (${item.anio})</h4>
+          <p class="text-sm text-gray-600">Cantidad: ${item.cantidad} | Estado: ${item.grado}</p>
+          <p class="text-sm text-green-600">Compra: $${item.precioCompra.toLocaleString()} COP</p>
+        </div>
+        <button onclick="removePieza('${item.id}')" class="text-red-500 hover:text-red-700 text-xl">×</button>
+      </div>
     `;
-    coleccionContainer.appendChild(card);
+    container.appendChild(card);
   });
 }
 
-// Esperar a que los datos se carguen
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    if (DATA.monedas.length > 0 && DATA.billetes.length > 0 && DATA.coleccion.length > 0) {
-      renderItems();
-    }
-  }, 100);
+function populateAddForm() {
+  const select = document.getElementById("add-denominacion");
+  select.innerHTML = "";
+  CATALOGO.forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item.id;
+    opt.textContent = `${item.denominacion} (${item.tipo})`;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById("add-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const id = Date.now().toString();
+  const pieza = {
+    id,
+    catalogoId: document.getElementById("add-denominacion").value,
+    anio: document.getElementById("add-anio").value,
+    grado: document.getElementById("add-grado").value,
+    cantidad: document.getElementById("add-cantidad").value,
+    precioCompra: document.getElementById("add-precio").value
+  };
+  addPieza(pieza);
+  alert("✅ Pieza añadida a tu colección");
+  document.getElementById("add-form").reset();
+  showSection("coleccion");
 });

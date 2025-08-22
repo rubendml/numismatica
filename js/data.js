@@ -1,29 +1,13 @@
-window.DATA = {
-  monedas: [],
-  billetes: [],
-  coleccion: []
-};
+window.CATALOGO = [];
 
-async function loadData() {
+async function loadCatalogo() {
   try {
-    const monedasRes = await fetch('data/monedas.json');
-    const billetesRes = await fetch('data/billetes.json');
-    const coleccionRes = await fetch('data/coleccion_ruben.json');
-
-    if (!monedasRes.ok || !billetesRes.ok || !coleccionRes.ok) {
-      throw new Error("Error al cargar los datos");
-    }
-
-    DATA.monedas = await monedasRes.json();
-    DATA.billetes = await billetesRes.json();
-    DATA.coleccion = await coleccionRes.json();
-
-    console.log("Datos cargados correctamente:", DATA);
+    const res = await fetch('data/catalogo.json');
+    CATALOGO = await res.json();
+    console.log("Catálogo cargado:", CATALOGO);
   } catch (error) {
-    console.error("Error:", error);
-    alert("No se pudieron cargar los datos. Verifica que los archivos JSON existen.");
+    console.error("Error al cargar catálogo:", error);
   }
 }
 
-// Ejecutar al cargar la página
-document.addEventListener("DOMContentLoaded", loadData);
+document.addEventListener("DOMContentLoaded", loadCatalogo);
