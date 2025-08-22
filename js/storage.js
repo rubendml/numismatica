@@ -1,11 +1,20 @@
-// Colección personal
 function getColeccion() {
-  const coleccion = localStorage.getItem('coleccion');
-  return coleccion ? JSON.parse(coleccion) : [];
+  try {
+    const coleccion = localStorage.getItem('coleccion');
+    return coleccion ? JSON.parse(coleccion) : [];
+  } catch (e) {
+    console.error("Error al leer colección:", e);
+    return [];
+  }
 }
 
 function saveColeccion(coleccion) {
-  localStorage.setItem('coleccion', JSON.stringify(coleccion));
+  try {
+    localStorage.setItem('coleccion', JSON.stringify(coleccion));
+  } catch (e) {
+    console.error("Error al guardar colección:", e);
+    alert("No se pudo guardar. Asegúrate de que tu navegador permite localStorage.");
+  }
 }
 
 function addPieza(pieza) {
@@ -20,26 +29,11 @@ function removePieza(id) {
   saveColeccion(coleccion);
 }
 
-// Subir imagen
 async function uploadImage(file) {
   if (!file) return null;
   const reader = new FileReader();
-  const result = await new Promise((resolve) => {
+  return new Promise((resolve) => {
     reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(file);
   });
-  return result;
-}
-
-// Editar pieza
-function updatePieza(id, datos) {
-  let coleccion = getColeccion();
-  coleccion = coleccion.map(p => p.id === id ? { ...p, ...datos } : p);
-  saveColeccion(coleccion);
-}
-
-// Borrar del catálogo
-function removeDelCatalogo(id) {
-  CATALOGO = CATALOGO.filter(item => item.id !== id);
-  localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
 }
