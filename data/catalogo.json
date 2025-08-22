@@ -2742,4 +2742,17 @@
     "rareza": "Raro",
     "valor": 100000
   }
+ {
+    "id": "b100000-2016",
+    "tipo": "Billete",
+    "denominacion": "$100,000",
+    "anio": 2016,
+    "material": "Polímero",
+    "tamaño": "156 × 72 mm",
+    "tema": "Cultura Sinú",
+    "serie": "Series II–X",
+    "observaciones": "Menos común",
+    "rareza": "Raro",
+    "valor": 100000
+  }
 ]
