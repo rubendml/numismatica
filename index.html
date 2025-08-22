@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Colección Numismática Colombia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="js/data.js" defer></script>
+  <script src="js/app.js" defer></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .card { transition: transform 0.2s; }
+    .card:hover { transform: translateY(-4px); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-500 text-white shadow-lg">
+    <div class="container mx-auto px-4 py-6 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold">🪙 Colección Numismática Colombia</h1>
+      <p class="mt-2 opacity-90">Seguimiento de monedas y billetes circulantes</p>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <div class="container mx-auto px-4 mt-6">
+    <div class="flex border-b border-gray-300 mb-6">
+      <button class="px-6 py-3 font-semibold text-amber-600 border-b-2 border-amber-600" onclick="showSection('monedas')">Monedas</button>
+      <button class="px-6 py-3 text-gray-600 hover:text-amber-600" onclick="showSection('billetes')">Billetes</button>
+      <button class="px-6 py-3 text-gray-600 hover:text-amber-600" onclick="showSection('coleccion')">Mi Colección</button>
+    </div>
+
+    <!-- Sección: Monedas -->
+    <div id="section-monedas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Cargado dinámicamente -->
+    </div>
+
+    <!-- Sección: Billetes -->
+    <div id="section-billetes" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Cargado dinámicamente -->
+    </div>
+
+    <!-- Sección: Mi Colección -->
+    <div id="section-coleccion" class="hidden mt-6">
+      <h2 class="text-2xl font-bold mb-4">Mi Colección (Rubén)</h2>
+      <div id="coleccion-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Cargado desde coleccion_ruben.json -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-12 bg-gray-800 text-white py-6 text-center text-sm">
+    <p>© 2025 Colección Numismática Colombia | Datos basados en emisiones del Banco de la República</p>
+  </footer>
+
+</body>
+</html>
