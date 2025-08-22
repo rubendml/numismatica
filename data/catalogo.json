@@ -2752,5 +2752,16 @@
     "rareza": "Común",
     "observaciones": "El Valle de Cocora en Quindío, con la palma de cera (árbol nacional), el pájaro barranquero y la flor del sietecueros, junto con la imagen del presidente Carlos Lleras Restrepo hacen parte de la imagen del billete de 100 mil pesos.",
     "valor": 100000
+  },
+  {
+    "id": "custom-billete- 100000-2017",
+    "tipo": "Billete",
+    "denominacion": "$ 100,000",
+    "anio": 2017,
+    "material": "Algodón al 100%",
+    "tema": "General",
+    "rareza": "Común",
+    "observaciones": "",
+    "valor": 100000
   }
 ]
