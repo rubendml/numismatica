@@ -1,46 +1,42 @@
-// Variable global para el catálogo
+// Variable global
 window.CATALOGO = [];
+const FECHA_ACTUALIZACION = "28 de mayo de 2025"; // Cambia esta fecha cada vez que actualices
 
 /**
- * Carga el catálogo desde el archivo JSON
- * y lo prepara para ser usado por la app.
+ * Carga el catálogo desde el JSON y actualiza la colección
  */
 async function loadCatalogo() {
   try {
-    // Intentar cargar desde localStorage primero
-    const saved = localStorage.getItem('catalogoPersonalizado');
-    if (saved) {
-      CATALOGO = JSON.parse(saved);
-      console.log("✅ Catálogo personalizado cargado desde localStorage");
-      if (typeof renderCatalogo === 'function') {
-        renderCatalogo();
-      }
-      return;
+    const res = await fetch('./data/catalogo.json?' + new Date().getTime());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const nuevoCatalogo = await res.json();
+    window.CATALOGO = nuevoCatalogo;
+
+    // Mostrar mensaje de bienvenida
+    const welcome = document.getElementById("welcome-message");
+    if (welcome) {
+      welcome.innerHTML = `
+        <p class="text-sm text-green-600 font-medium">
+          ✅ Última actualización: <strong>${FECHA_ACTUALIZACION}</strong>
+        </p>
+      `;
     }
 
-    // Si no, cargar desde el archivo JSON
-    const res = await fetch('./data/catalogo.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    CATALOGO = await res.json();
-    console.log("✅ Catálogo cargado desde JSON:", CATALOGO.length, "piezas");
+    // Actualizar colección con nuevos datos del catálogo
+    actualizarColeccionConCatalogo();
 
-    // Ordenar por valor y año
-    CATALOGO.sort((a, b) => a.valor - b.valor || a.anio - b.anio);
-
-    // Renderizar si la función existe
+    // Renderizar
     if (typeof renderCatalogo === 'function') {
       renderCatalogo();
+    }
+    if (typeof renderColeccion === 'function') {
+      renderColeccion();
     }
   } catch (error) {
     console.error("❌ Error al cargar el catálogo:", error);
     const container = document.getElementById("section-catalogo");
-    if (container) {
-      container.innerHTML = `
-        <p class="text-red-500 text-center py-10">
-          Error al cargar el catálogo. Verifica que 'data/catalogo.json' exista y sea accesible.
-        </p>
-      `;
-    }
+    if (container) container.innerHTML = `<p class="text-red-500 text-center py-10">Error al cargar el catálogo.</p>`;
   }
 }
 
