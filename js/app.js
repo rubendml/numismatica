@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function sincronizarConGitHub() {
   // === CONFIGURACIÓN (Cambia estos valores) ===
-  const TOKEN = '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';           // ← Reemplaza con tu token
+  const TOKEN = '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';           // ← Reemplaza con tu token
   const OWNER = 'rubendml';    // ← Reemplaza con tu usuario
   const REPO = 'mi-coleccion-numismatica';        // ← Reemplaza con el nombre de tu repositorio
   const PATH = 'data/catalogo.json';       // ← Ruta del archivo en tu repositorio
@@ -326,7 +326,7 @@ async function sincronizarConGitHub() {
   // ==========================================
 
   // Validación de configuración
-  if (TOKEN === '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') {
+  if (TOKEN === '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') {
     alert('❌ ERROR: Debes configurar tu token de GitHub en la función sincronizarConGitHub().');
     console.error('Configuración requerida: TOKEN, OWNER, REPO');
     return;
@@ -387,4 +387,5 @@ async function sincronizarConGitHub() {
     alert('❌ No se pudo conectar con GitHub. Revisa tu conexión o el token.');
   }
 }
+
 
