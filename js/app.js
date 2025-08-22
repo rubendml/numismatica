@@ -352,28 +352,22 @@ function populateAddForm() {
  * Sincroniza el catálogo actualizado con tu repositorio de GitHub
  */
 async function sincronizarConGitHub() {
-  // === CONFIGURACIÓN (Cambia estos valores) ===
-  const TOKEN = 'TU_TOKEN_AQUI';           // ← Reemplaza con tu token real
-  const OWNER = 'tu-usuario-de-github';    // ← Reemplaza con tu usuario de GitHub
-  const REPO = 'tu-nombre-de-repo';        // ← Reemplaza con el nombre de tu repositorio
-  const PATH = 'data/catalogo.json';       // ← Ruta del archivo en tu repositorio
-  const BRANCH = 'main';                   // ← Puede ser 'main' o 'master'
-  // ==========================================
+  // === CONFIGURACIÓN (Tus datos) ===
+  const TOKEN = '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'; // ✅ Tu token
+  const OWNER = 'rubendml';     // ✅ Tu usuario
+  const REPO = 'numismatica';   // ✅ Tu repositorio
+  const PATH = 'data/catalogo.json'; // Ruta del archivo
+  const BRANCH = 'main';        // Puede ser 'main' o 'master'
+  // ===============================
 
   // Validación de configuración
-  if (TOKEN === 'TU_TOKEN_AQUI') {
-    alert('❌ ERROR: Debes configurar tu token de GitHub en la función sincronizarConGitHub().');
-    console.error('Configuración requerida: TOKEN, OWNER, REPO');
-    return;
-  }
-
   if (!TOKEN || !OWNER || !REPO) {
     alert('❌ Configuración incompleta. Verifica TOKEN, OWNER y REPO.');
     return;
   }
 
   try {
-    // 1. Obtener SHA del archivo actual (necesario para actualizar)
+    // 1. Obtener SHA del archivo actual
     const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
     const res = await fetch(url);
     
@@ -391,9 +385,9 @@ async function sincronizarConGitHub() {
 
     // 2. Preparar el contenido actualizado
     const content = JSON.stringify(window.CATALOGO, null, 2);
-    const encodedContent = btoa(unescape(encodeURIComponent(content))); // Base64
+    const encodedContent = btoa(unescape(encodeURIComponent(content)));
 
-    // 3. Hacer el commit (PUT request)
+    // 3. Hacer el commit
     const commitRes = await fetch(url, {
       method: 'PUT',
       headers: {
