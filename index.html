@@ -8,16 +8,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Scripts con manejo de errores -->
-  <script>
-    window.onerror = function(message, source, lineno, colno, error) {
-      console.error("Error en:", source, "Línea:", lineno, "Mensaje:", message);
-      alert("Hubo un error en la página. Revisa la consola (F12).");
-    };
-  </script>
+  <!-- Scripts -->
   <script src="./js/data.js" defer></script>
   <script src="./js/storage.js" defer></script>
   <script src="./js/app.js" defer></script>
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -31,7 +26,7 @@
     </div>
   </header>
 
-  <!-- Tabs -->
+  <!-- Tabs de navegación -->
   <div class="container mx-auto px-4 mt-6 flex justify-center gap-4 mb-6 flex-wrap">
     <button onclick="showSection('catalogo')" class="px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition">Catálogo</button>
     <button onclick="showSection('coleccion')" class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Mi Colección</button>
@@ -39,15 +34,15 @@
     <button onclick="showSection('add-denominacion')" class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
   </div>
 
-  <!-- Contenido -->
+  <!-- Contenido principal -->
   <div class="container mx-auto px-4 pb-12">
 
-    <!-- Catálogo -->
+    <!-- Sección: Catálogo -->
     <div id="section-catalogo" class="mt-6">
       <p class="text-center text-gray-500">Cargando catálogo...</p>
     </div>
 
-    <!-- Mi Colección -->
+    <!-- Sección: Mi Colección -->
     <div id="section-coleccion" class="hidden mt-6">
       <h2 class="text-2xl font-bold mb-4">Mis Piezas</h2>
       <div id="coleccion-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -55,7 +50,7 @@
       </div>
     </div>
 
-    <!-- Añadir Pieza -->
+    <!-- Sección: Añadir a Mi Colección -->
     <div id="section-add" class="hidden mt-6">
       <h2 class="text-2xl font-bold mb-4">Añadir a Mi Colección</h2>
       <form id="add-form" class="bg-white p-6 rounded-xl shadow-lg">
@@ -95,9 +90,9 @@
       </form>
     </div>
 
-    <!-- Añadir Denominación -->
+    <!-- Sección: Añadir o Editar Denominación -->
     <div id="section-add-denominacion" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Añadir Nueva Denominación</h2>
+      <h2 class="text-2xl font-bold mb-4">Añadir o Editar Denominación</h2>
       <form id="add-denominacion-form" class="bg-white p-6 rounded-xl shadow-lg">
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Tipo</span>
