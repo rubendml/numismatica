@@ -1,5 +1,27 @@
-body { font-family: 'Inter', sans-serif; }
-.card { transition: transform 0.2s; }
-.card:hover { transform: translateY(-4px); }
-.tab-active { @apply px-6 py-3 font-semibold text-amber-600 border-b-2 border-amber-600; }
-.tab-inactive { @apply px-6 py-3 text-gray-600 hover:text-amber-600; }
+/* Personaliza colores aquí */
+:root {
+  --primary-color: #f59e0b;
+  --secondary-color: #3b82f6;
+  --accent-color: #10b981;
+}
+
+/* Aplicar colores */
+.bg-amber-600 { background-color: var(--primary-color); }
+.bg-blue-600 { background-color: var(--secondary-color); }
+.bg-green-600 { background-color: var(--accent-color); }
+.bg-purple-600 { background-color: #9333ea; }
+
+/* Efectos */
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .flex-wrap { flex-direction: column; align-items: center; }
+  .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+}

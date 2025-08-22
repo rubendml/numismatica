@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Colección Numismática Colombia</title>
+  <title>Mi Colección Numismática</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Scripts -->
   <script src="js/data.js" defer></script>
   <script src="js/storage.js" defer></script>
   <script src="js/app.js" defer></script>
+  <!-- Estilos personalizados -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -16,43 +20,43 @@
   <!-- Header -->
   <header class="bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-500 text-white shadow-lg">
     <div class="container mx-auto px-4 py-6 text-center">
-      <h1 class="text-3xl md:text-4xl font-bold">🪙 Colección Numismática Colombia</h1>
+      <img src="assets/logo.png" alt="Logo" class="w-12 h-12 inline-block mr-3">
+      <h1 class="text-3xl md:text-4xl font-bold">🪙 Mi Colección Numismática</h1>
       <p class="mt-2 opacity-90">Seguimiento de monedas y billetes circulantes</p>
     </div>
   </header>
 
-  <!-- Tabs -->
-  <div class="container mx-auto px-4 mt-6">
-    <div class="flex border-b border-gray-300 mb-6">
-      <button class="tab-active" onclick="showSection('catalogo')">Catálogo</button>
-      <button class="tab-inactive" onclick="showSection('coleccion')">Mi Colección</button>
-      <button class="tab-inactive" onclick="showSection('add')">Añadir Pieza</button>
-    </div>
+  <!-- Tabs de navegación -->
+  <div class="container mx-auto px-4 mt-6 flex justify-center gap-4 mb-6 flex-wrap">
+    <button onclick="showSection('catalogo')" class="px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition">Catálogo</button>
+    <button onclick="showSection('coleccion')" class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Mi Colección</button>
+    <button onclick="showSection('add')" class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition">Añadir Pieza</button>
+    <button onclick="showSection('add-denominacion')" class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
+  </div>
 
-    <!-- Sección: Catálogo -->
-    <div id="section-catalogo" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Cargado dinámicamente -->
+  <!-- Contenido principal -->
+  <div class="container mx-auto px-4 pb-12">
+
+    <!-- Sección: Catálogo (con paginación y filtros) -->
+    <div id="section-catalogo" class="mt-6">
+      <!-- Cargado dinámicamente por app.js -->
     </div>
 
     <!-- Sección: Mi Colección -->
     <div id="section-coleccion" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Mi Colección</h2>
+      <h2 class="text-2xl font-bold mb-4">Mis Piezas</h2>
       <div id="coleccion-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Cargado desde localStorage -->
+        <!-- Cargado dinámicamente -->
       </div>
     </div>
 
-    <!-- Sección: Añadir Pieza -->
+    <!-- Sección: Añadir a Colección -->
     <div id="section-add" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Añadir Nueva Pieza</h2>
-      <form id="add-form" class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-bold mb-4">Añadir a Mi Colección</h2>
+      <form id="add-form" class="bg-white p-6 rounded-xl shadow-lg">
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Denominación</span>
           <select id="add-denominacion" class="mt-1 block w-full border-gray-300 rounded-md" required></select>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Año</span>
-          <input type="number" id="add-anio" class="mt-1 block w-full border-gray-300 rounded-md" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Estado (Grado)</span>
@@ -76,14 +80,64 @@
           <span class="text-gray-700 font-medium">Precio de Compra (COP)</span>
           <input type="number" id="add-precio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Ej: 500" required>
         </label>
-        <button type="submit" class="w-full bg-amber-600 text-white py-2 rounded-md hover:bg-amber-700">Añadir a Colección</button>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Imagen (opcional)</span>
+          <input type="file" id="add-imagen" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+        </label>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">Añadir a Colección</button>
       </form>
     </div>
+
+    <!-- Sección: Añadir Denominación -->
+    <div id="section-add-denominacion" class="hidden mt-6">
+      <h2 class="text-2xl font-bold mb-4">Añadir Nueva Denominación</h2>
+      <form id="add-denominacion-form" class="bg-white p-6 rounded-xl shadow-lg">
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Tipo</span>
+          <select id="denom-tipo" class="mt-1 block w-full border-gray-300 rounded-md" required>
+            <option value="Moneda">Moneda</option>
+            <option value="Billete">Billete</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Denominación</span>
+          <input type="text" id="denom-denominacion" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="$50" required>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Año</span>
+          <input type="number" id="denom-anio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="2024" required>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Material</span>
+          <input type="text" id="denom-material" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Acero chapado con níquel" required>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Tema</span>
+          <input type="text" id="denom-tema" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Cultura Zenú">
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Rareza</span>
+          <select id="denom-rareza" class="mt-1 block w-full border-gray-300 rounded-md" required>
+            <option value="Común">Común</option>
+            <option value="Menos común">Menos común</option>
+            <option value="Raro">Raro</option>
+            <option value="Muy raro">Muy raro</option>
+            <option value="Extremadamente rara">Extremadamente rara</option>
+          </select>
+        </label>
+        <label class="block mb-4">
+          <span class="text-gray-700 font-medium">Observaciones</span>
+          <textarea id="denom-observaciones" class="mt-1 block w-full border-gray-300 rounded-md" rows="2" placeholder="Ej: Mejor definición en relieve"></textarea>
+        </label>
+        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">Añadir al Catálogo</button>
+      </form>
+    </div>
+
   </div>
 
   <!-- Footer -->
   <footer class="mt-12 bg-gray-800 text-white py-6 text-center text-sm">
-    <p>© 2025 Colección Numismática Colombia | Datos basados en emisiones del Banco de la República</p>
+    <p>© 2025 Mi Colección Numismática | Datos basados en emisiones del Banco de la República</p>
   </footer>
 
 </body>
