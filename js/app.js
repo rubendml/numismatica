@@ -353,7 +353,7 @@ function populateAddForm() {
  */
 async function sincronizarConGitHub() {
   // === CONFIGURACIÓN (Tus datos) ===
-  const TOKEN = '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'; // ✅ Tu token
+  // const TOKEN = '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'; // ✅ Tu token 
   const OWNER = 'rubendml';     // ✅ Tu usuario
   const REPO = 'numismatica';   // ✅ Tu repositorio
   const PATH = 'data/catalogo.json'; // Ruta del archivo
@@ -416,3 +416,4 @@ async function sincronizarConGitHub() {
     alert('❌ No se pudo conectar con GitHub. Revisa tu conexión o el token.');
   }
 }
+
