@@ -1,0 +1,41 @@
+[
+  {
+    "id": "b20000",
+    "denominacion": "$20,000",
+    "p": "P# 461",
+    "n": "N# 208154",
+    "anios": "2019–2023",
+    "material": "Polímero",
+    "tamaño": "142 × 66 mm",
+    "tema": "Cultura Zenú",
+    "serie": "Series I–X",
+    "rareza": "Común",
+    "imagen": "https://es.numista.com/album/note208154.html"
+  },
+  {
+    "id": "b50000",
+    "denominacion": "$50,000",
+    "p": "P# 462",
+    "n": "N# 208155",
+    "anios": "2020–2023",
+    "material": "Polímero",
+    "tamaño": "149 × 69 mm",
+    "tema": "Cultura Muisca",
+    "serie": "Serie I, II–VII",
+    "rareza": "Menos común",
+    "imagen": "https://es.numista.com/album/note208155.html"
+  },
+  {
+    "id": "b100000",
+    "denominacion": "$100,000",
+    "p": "P# 463",
+    "n": "N# 208156",
+    "anios": "2021–2024",
+    "material": "Polímero",
+    "tamaño": "156 × 72 mm",
+    "tema": "Cultura Sinú",
+    "serie": "Series I–X",
+    "rareza": "Raro",
+    "imagen": "https://es.numista.com/album/note208156.html"
+  }
+]
