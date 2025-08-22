@@ -318,15 +318,15 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function sincronizarConGitHub() {
   // === CONFIGURACIÓN (Cambia estos valores) ===
-  const TOKEN = 'TU_TOKEN_AQUI';           // ← Reemplaza con tu token
-  const OWNER = 'tu-usuario-de-github';    // ← Reemplaza con tu usuario
-  const REPO = 'tu-nombre-de-repo';        // ← Reemplaza con el nombre de tu repositorio
+  const TOKEN = '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';           // ← Reemplaza con tu token
+  const OWNER = 'rubendml';    // ← Reemplaza con tu usuario
+  const REPO = 'mi-coleccion-numismatica';        // ← Reemplaza con el nombre de tu repositorio
   const PATH = 'data/catalogo.json';       // ← Ruta del archivo en tu repositorio
   const BRANCH = 'main';                   // ← Puede ser 'main' o 'master'
   // ==========================================
 
   // Validación de configuración
-  if (TOKEN === 'TU_TOKEN_AQUI') {
+  if (TOKEN === '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') {
     alert('❌ ERROR: Debes configurar tu token de GitHub en la función sincronizarConGitHub().');
     console.error('Configuración requerida: TOKEN, OWNER, REPO');
     return;
@@ -387,3 +387,4 @@ async function sincronizarConGitHub() {
     alert('❌ No se pudo conectar con GitHub. Revisa tu conexión o el token.');
   }
 }
+
