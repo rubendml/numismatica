@@ -1,33 +1,31 @@
 /**
- * Obtiene la colección personal desde localStorage
- * @returns {Array} Colección de piezas
+ * Obtiene la colección personal
+ * @returns {Array} Colección
  */
 function getColeccion() {
   try {
     const coleccion = localStorage.getItem('coleccion');
     return coleccion ? JSON.parse(coleccion) : [];
   } catch (e) {
-    console.error("❌ Error al leer colección:", e);
     return [];
   }
 }
 
 /**
- * Guarda la colección personal en localStorage
- * @param {Array} coleccion - Colección a guardar
+ * Guarda la colección
+ * @param {Array} coleccion
  */
 function saveColeccion(coleccion) {
   try {
     localStorage.setItem('coleccion', JSON.stringify(coleccion));
   } catch (e) {
-    console.error("❌ Error al guardar colección:", e);
-    alert("No se pudo guardar. Asegúrate de que tu navegador permite localStorage.");
+    alert("No se pudo guardar. Verifica tu navegador.");
   }
 }
 
 /**
- * Añade una nueva pieza a la colección
- * @param {Object} pieza - Pieza a añadir
+ * Añade una pieza a la colección
+ * @param {Object} pieza
  */
 function addPieza(pieza) {
   const coleccion = getColeccion();
@@ -36,8 +34,8 @@ function addPieza(pieza) {
 }
 
 /**
- * Elimina una pieza de la colección por su ID
- * @param {string} id - ID de la pieza
+ * Elimina una pieza por ID
+ * @param {string} id
  */
 function removePieza(id) {
   let coleccion = getColeccion();
@@ -46,9 +44,9 @@ function removePieza(id) {
 }
 
 /**
- * Sube una imagen y la convierte a base64
- * @param {File} file - Archivo de imagen
- * @returns {Promise<string|null>} URL de la imagen o null
+ * Sube una imagen
+ * @param {File} file
+ * @returns {Promise<string|null>}
  */
 async function uploadImage(file) {
   if (!file) return null;
@@ -60,14 +58,35 @@ async function uploadImage(file) {
 }
 
 /**
- * Edita una pieza existente (opcional)
- * @param {string} id - ID de la pieza
+ * Actualiza la colección con los datos más recientes del catálogo
  */
-function editarPieza(id) {
+function actualizarColeccionConCatalogo() {
   const coleccion = getColeccion();
-  const pieza = coleccion.find(p => p.id === id);
-  if (!pieza) return;
+  if (coleccion.length === 0 || CATALOGO.length === 0) return;
 
-  // Aquí podrías abrir un modal de edición
-  alert("✏️ Función de edición de pieza no implementada aún.");
+  const catalogoMap = {};
+  CATALOGO.forEach(item => {
+    catalogoMap[item.id] = item;
+  });
+
+  const actualizada = coleccion.map(pieza => {
+    const nuevoDatos = catalogoMap[pieza.catalogoId];
+    if (nuevoDatos) {
+      return {
+        ...pieza,
+        denominacion: nuevoDatos.denominacion,
+        tipo: nuevoDatos.tipo,
+        tema: nuevoDatos.tema,
+        material: nuevoDatos.material,
+        rareza: nuevoDatos.rareza,
+        anio: nuevoDatos.anio
+      };
+    }
+    return pieza;
+  });
+
+  if (actualizada.some((p, i) => p !== coleccion[i])) {
+    saveColeccion(actualizada);
+    console.log("✅ Colección actualizada con los últimos datos del catálogo.");
+  }
 }
