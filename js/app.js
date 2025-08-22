@@ -3,10 +3,6 @@ const ITEMS_PER_PAGE = 20;
 let currentPage = 1;
 let editandoId = null;
 
-/**
- * Muestra la sección seleccionada
- * @param {string} section - Nombre de la sección
- */
 function showSection(section) {
   const sections = ['catalogo', 'coleccion', 'add', 'add-denominacion'];
   sections.forEach(sec => {
@@ -17,7 +13,7 @@ function showSection(section) {
   const target = document.getElementById(`section-${section}`);
   if (target) target.classList.remove('hidden');
 
-  // Actualizar botones activos
+  // Botones activos
   document.querySelectorAll("header button").forEach(btn => {
     btn.classList.remove("bg-amber-600", "bg-blue-600", "bg-green-600", "bg-purple-600");
     btn.classList.add("bg-gray-300");
@@ -37,10 +33,7 @@ function showSection(section) {
   if (section === "add") populateAddForm();
 }
 
-/**
- * Obtiene el catálogo filtrado por tipo, denominación, año y búsqueda
- * @returns {Array} Catálogo filtrado
- */
+// --- FILTROS Y PAGINACIÓN ---
 function getFilteredCatalogo() {
   const tipo = document.getElementById("filter-tipo")?.value || "";
   const denom = (document.getElementById("filter-denominacion")?.value || "").toLowerCase();
@@ -57,22 +50,19 @@ function getFilteredCatalogo() {
       (item.material && item.material.toLowerCase().includes(search));
 
     return matchesTipo && matchesDenom && matchesAnio && matchesSearch;
-  });
+  }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
-/**
- * Renderiza el catálogo con paginación y filtros
- */
 function renderCatalogo() {
   const container = document.getElementById("section-catalogo");
   if (!container) return;
+  container.classList.remove("hidden");
 
   const filtered = getFilteredCatalogo();
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  // Filtros
   container.innerHTML = `
     <div class="mb-6 bg-white p-4 rounded-lg shadow">
       <div class="flex flex-col md:flex-row gap-4">
@@ -129,8 +119,6 @@ function renderCatalogo() {
         <p class="text-sm text-gray-500"><strong>Material:</strong> ${item.material}</p>
         <p class="text-sm text-gray-500"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-gray-600 mt-2">${item.observaciones}</p>
-        
-        <!-- Botones de editar y eliminar -->
         <div class="mt-4 flex justify-end gap-2">
           <button onclick="editarDenominacion('${item.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">✏️ Editar</button>
           <button onclick="eliminarDenominacion('${item.id}')" class="text-red-600 hover:text-red-800 text-sm font-medium">🗑️ Eliminar</button>
@@ -140,7 +128,6 @@ function renderCatalogo() {
     grid.appendChild(card);
   });
 
-  // Paginación
   const pagination = document.createElement("div");
   pagination.className = "mt-8 flex justify-center items-center gap-4";
   pagination.innerHTML = `
@@ -155,9 +142,6 @@ function renderCatalogo() {
   container.appendChild(pagination);
 }
 
-/**
- * Página anterior
- */
 function prevPage(totalPages) {
   if (currentPage > 1) {
     currentPage--;
@@ -165,9 +149,6 @@ function prevPage(totalPages) {
   }
 }
 
-/**
- * Página siguiente
- */
 function nextPage(totalPages) {
   if (currentPage < totalPages) {
     currentPage++;
@@ -175,16 +156,14 @@ function nextPage(totalPages) {
   }
 }
 
-/**
- * Edita una denominación existente
- * @param {string} id - ID de la denominación
- */
+// --- EDITAR Y ELIMINAR ---
+let editandoId = null;
+
 function editarDenominacion(id) {
   const item = CATALOGO.find(d => d.id === id);
   if (!item) return;
 
   editandoId = id;
-
   document.getElementById("denom-tipo").value = item.tipo;
   document.getElementById("denom-denominacion").value = item.denominacion;
   document.getElementById("denom-anio").value = item.anio;
@@ -201,27 +180,113 @@ function editarDenominacion(id) {
   showSection("add-denominacion");
 }
 
-/**
- * Elimina una denominación del catálogo
- * @param {string} id - ID de la denominación
- */
 function eliminarDenominacion(id) {
-  const item = CATALOGO.find(d => d.id === id);
-  if (!item) return;
-
-  const confirmado = confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`);
-  if (!confirmado) return;
+  if (!confirm("¿Eliminar esta denominación del catálogo?")) return;
 
   CATALOGO = CATALOGO.filter(d => d.id !== id);
   localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
-
-  alert("🗑️ Denominación eliminada del catálogo.");
+  alert("🗑️ Denominación eliminada.");
   renderCatalogo();
 }
 
-/**
- * Renderiza la colección personal
- */
+// --- EXPORTAR E IMPORTAR ---
+function exportarCatalogo() {
+  const dataStr = JSON.stringify(CATALOGO, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'catalogo.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert("✅ Archivo 'catalogo.json' exportado. ¡Súbelo a GitHub!");
+}
+
+async function importarDesdeGitHub() {
+  if (!confirm("¿Actualizar desde GitHub? Se perderán cambios locales no exportados.")) return;
+
+  try {
+    const res = await fetch('./data/catalogo.json?' + new Date().getTime());
+    if (!res.ok) throw new Error("No se pudo cargar");
+    const nuevo = await res.json();
+    CATALOGO = nuevo;
+    localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
+    actualizarColeccionConCatalogo();
+    alert("✅ Catálogo actualizado desde GitHub.");
+    renderCatalogo();
+    renderColeccion();
+  } catch (error) {
+    alert("❌ Error al actualizar. Verifica tu conexión.");
+  }
+}
+
+// --- EVENTOS ---
+document.addEventListener("DOMContentLoaded", () => {
+  // Formulario: Añadir/editar denominación
+  const form = document.getElementById("add-denominacion-form");
+  if (form) {
+    form.onsubmit = function(e) {
+      e.preventDefault();
+
+      const tipo = document.getElementById("denom-tipo").value;
+      const denominacion = document.getElementById("denom-denominacion").value;
+      const anio = parseInt(document.getElementById("denom-anio").value);
+      const material = document.getElementById("denom-material").value;
+      const tema = document.getElementById("denom-tema").value || "General";
+      const rareza = document.getElementById("denom-rareza").value;
+      const obs = document.getElementById("denom-observaciones").value || "";
+      const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
+
+      if (editandoId) {
+        const index = CATALOGO.findIndex(d => d.id === editandoId);
+        if (index !== -1) {
+          CATALOGO[index] = { ...CATALOGO[index], tipo, denominacion, anio, material, tema, rareza, observaciones: obs, valor };
+        }
+        const btn = document.querySelector("#add-denominacion-form button[type='submit']");
+        btn.textContent = "Añadir al Catálogo";
+        btn.classList.remove("bg-blue-600");
+        btn.classList.add("bg-purple-600");
+        editandoId = null;
+        alert(`✅ Actualizado: ${denominacion} (${anio})`);
+      } else {
+        const id = `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
+        CATALOGO.push({ id, tipo, denominacion, anio, material, tema, rareza, observaciones: obs, valor });
+        alert(`✅ Añadido: ${denominacion} (${anio})`);
+      }
+
+      localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
+      showSection("catalogo");
+    };
+  }
+
+  // Añadir a colección
+  const addForm = document.getElementById("add-form");
+  if (addForm) {
+    addForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const id = Date.now().toString();
+      const file = document.getElementById("add-imagen")?.files[0];
+      const imagen = file ? await uploadImage(file) : null;
+
+      const pieza = {
+        id,
+        catalogoId: document.getElementById("add-denominacion").value,
+        anio: document.getElementById("add-anio").value,
+        grado: document.getElementById("add-grado").value,
+        cantidad: document.getElementById("add-cantidad").value,
+        precioCompra: document.getElementById("add-precio").value,
+        imagen
+      };
+
+      addPieza(pieza);
+      alert("✅ Pieza añadida a tu colección");
+      addForm.reset();
+      showSection("coleccion");
+    };
+  }
+});
+
+// --- MIS COLECCIÓN ---
 function renderColeccion() {
   const container = document.getElementById("coleccion-items");
   if (!container) return;
@@ -258,9 +323,6 @@ function renderColeccion() {
   });
 }
 
-/**
- * Llena el selector de denominaciones en el formulario de añadir
- */
 function populateAddForm() {
   const select = document.getElementById("add-denominacion");
   if (!select) return;
@@ -273,100 +335,3 @@ function populateAddForm() {
     select.appendChild(opt);
   });
 }
-
-// --- EVENTOS AL CARGAR ---
-document.addEventListener("DOMContentLoaded", () => {
-  // Formulario: Añadir o editar denominación
-  const form = document.getElementById("add-denominacion-form");
-  if (form) {
-    form.onsubmit = function(e) {
-      e.preventDefault();
-
-      const tipo = document.getElementById("denom-tipo").value;
-      const denominacion = document.getElementById("denom-denominacion").value;
-      const anio = parseInt(document.getElementById("denom-anio").value);
-      const material = document.getElementById("denom-material").value;
-      const tema = document.getElementById("denom-tema").value || "General";
-      const rareza = document.getElementById("denom-rareza").value;
-      const observaciones = document.getElementById("denom-observaciones").value || "";
-      const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
-
-      if (editandoId) {
-        // Actualizar
-        const index = CATALOGO.findIndex(d => d.id === editandoId);
-        if (index !== -1) {
-          CATALOGO[index] = {
-            ...CATALOGO[index],
-            tipo,
-            denominacion,
-            anio,
-            material,
-            tema,
-            rareza,
-            observaciones,
-            valor
-          };
-        }
-
-        // Resetear modo edición
-        const btn = document.querySelector("#add-denominacion-form button[type='submit']");
-        btn.textContent = "Añadir al Catálogo";
-        btn.classList.remove("bg-blue-600");
-        btn.classList.add("bg-purple-600");
-        editandoId = null;
-
-        alert(`✅ Denominación "${denominacion} (${anio})" actualizada.`);
-      } else {
-        // Nueva denominación
-        const id = `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
-
-        const nuevaDenominacion = {
-          id,
-          tipo,
-          denominacion,
-          anio,
-          material,
-          tema,
-          rareza,
-          observaciones,
-          valor
-        };
-
-        CATALOGO.push(nuevaDenominacion);
-        alert(`✅ Denominación "${denominacion} (${anio})" añadida al catálogo.`);
-      }
-
-      // Guardar en localStorage
-      localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
-
-      // Recargar vista
-      showSection("catalogo");
-    };
-  }
-
-  // Formulario: Añadir a colección
-  const addForm = document.getElementById("add-form");
-  if (addForm) {
-    addForm.onsubmit = async function(e) {
-      e.preventDefault();
-      const id = Date.now().toString();
-      const file = document.getElementById("add-imagen")?.files[0];
-      const imagen = file ? await uploadImage(file) : null;
-
-      const pieza = {
-        id,
-        catalogoId: document.getElementById("add-denominacion").value,
-        anio: document.getElementById("add-anio").value,
-        grado: document.getElementById("add-grado").value,
-        cantidad: document.getElementById("add-cantidad").value,
-        precioCompra: document.getElementById("add-precio").value,
-        imagen
-      };
-
-      addPieza(pieza);
-      alert("✅ Pieza añadida a tu colección");
-      addForm.reset();
-      showSection("coleccion");
-    };
-  }
-});
