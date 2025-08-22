@@ -1,5 +1,5 @@
 window.CATALOGO = [];
-const FECHA_ACTUALIZACION = "28 de mayo de 2025";
+const FECHA_ACTUALIZACION = "28 de mayo de 2025"; // Cambia cada vez que actualices
 
 async function loadCatalogo() {
   try {
