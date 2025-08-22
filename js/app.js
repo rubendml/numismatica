@@ -311,3 +311,79 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 });
+
+/**
+ * Sincroniza el catálogo actualizado con tu repositorio de GitHub
+ * Requiere un Personal Access Token (PAT) con permisos de escritura.
+ */
+async function sincronizarConGitHub() {
+  // === CONFIGURACIÓN (Cambia estos valores) ===
+  const TOKEN = 'TU_TOKEN_AQUI';           // ← Reemplaza con tu token
+  const OWNER = 'tu-usuario-de-github';    // ← Reemplaza con tu usuario
+  const REPO = 'tu-nombre-de-repo';        // ← Reemplaza con el nombre de tu repositorio
+  const PATH = 'data/catalogo.json';       // ← Ruta del archivo en tu repositorio
+  const BRANCH = 'main';                   // ← Puede ser 'main' o 'master'
+  // ==========================================
+
+  // Validación de configuración
+  if (TOKEN === 'TU_TOKEN_AQUI') {
+    alert('❌ ERROR: Debes configurar tu token de GitHub en la función sincronizarConGitHub().');
+    console.error('Configuración requerida: TOKEN, OWNER, REPO');
+    return;
+  }
+
+  if (!TOKEN || !OWNER || !REPO) {
+    alert('❌ Configuración incompleta. Verifica TOKEN, OWNER y REPO.');
+    return;
+  }
+
+  try {
+    // 1. Obtener SHA del archivo actual (necesario para actualizar)
+    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`;
+    const res = await fetch(url);
+    
+    if (!res.ok) {
+      if (res.status === 404) {
+        alert('❌ No se encontró el archivo en GitHub. Verifica la ruta: ' + PATH);
+      } else {
+        const error = await res.json();
+        alert(`❌ Error ${res.status}: ${error.message}`);
+      }
+      return;
+    }
+
+    const data = await res.json();
+
+    // 2. Preparar el contenido actualizado
+    const content = JSON.stringify(window.CATALOGO, null, 2);
+    const encodedContent = btoa(unescape(encodeURIComponent(content))); // Base64
+
+    // 3. Hacer el commit (PUT request)
+    const commitRes = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `Sincronización automática - ${new Date().toLocaleString('es-ES')}`,
+        content: encodedContent,
+        sha: data.sha,
+        branch: BRANCH
+      })
+    });
+
+    const result = await commitRes.json();
+
+    if (commitRes.ok) {
+      alert(`✅ ¡Sincronización exitosa!\n\nTu catálogo se actualizó en GitHub.\nTodos tus dispositivos verán los cambios al recargar.`);
+      console.log('Sincronización completada:', result);
+    } else {
+      console.error('Error en la API de GitHub:', result);
+      alert(`❌ Error: ${result.message}\n\nRevisa la consola (F12) para más detalles.`);
+    }
+  } catch (error) {
+    console.error('Error al sincronizar con GitHub:', error);
+    alert('❌ No se pudo conectar con GitHub. Revisa tu conexión o el token.');
+  }
+}
