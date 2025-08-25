@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
     // === CONFIGURACIÓN (Tú debes llenar estos valores) ===
     const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Usa variables de entorno
-    const OWNER = 'rubendml-9657';                     // Tu usuario de GitHub
+    const OWNER = 'rubendml';                     // Tu usuario de GitHub
     const REPO = 'numismatica';                   // Nombre de tu repositorio
     const PATH = req.body.path || 'data/coleccion.json'; // Ruta del archivo
     const BRANCH = 'main';                        // Puede ser 'main' o 'master'
@@ -86,5 +86,4 @@ export default async function handler(req, res) {
             error: 'Error interno del servidor'
         });
     }
-
 }
