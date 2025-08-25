@@ -436,7 +436,7 @@ async function sincronizarColeccion() {
   }
 
   // 3. Validar que el proxy URL esté definido
-  const PROXY_URL = 'numismatica-lac.vercel.app'; // ← Cambia por tu URL real
+  const PROXY_URL = 'https://numismatica-lac.vercel.app'; // ← Cambia por tu URL real
   if (!PROXY_URL || PROXY_URL.includes('vercel.app')) {
     msg.textContent = '⚠️ URL del proxy no configurada';
     msg.className = 'text-xs text-yellow-600 mt-1';
@@ -507,5 +507,6 @@ async function sincronizarColeccion() {
   }
 
 }
+
 
 
