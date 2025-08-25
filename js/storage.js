@@ -10,6 +10,10 @@ function getColeccion() {
 function saveColeccion(coleccion) {
   try {
     localStorage.setItem('coleccion', JSON.stringify(coleccion));
+    // 🔥 Sincronización automática
+    if (typeof sincronizarColeccion === 'function') {
+      sincronizarColeccion();
+    }
   } catch (e) {
     alert('No se pudo guardar la colección.');
   }
