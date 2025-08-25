@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi Colección Numismática</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +11,6 @@
   <!-- Estilos personalizados -->
   <link rel="stylesheet" href="./css/styles.css">
 </head>
-
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header -->
@@ -32,25 +30,19 @@
 
   <!-- Tabs -->
   <div class="container mx-auto px-4 mt-6 flex justify-center gap-4 mb-6 flex-wrap">
-    <button onclick="showSection('catalogo')"
-      class="px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition">Catálogo</button>
-    <button onclick="showSection('coleccion')"
-      class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Mi Colección</button>
-    <button onclick="showSection('add')"
-      class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition">Añadir Pieza</button>
-    <button onclick="showSection('add-denominacion')"
-      class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
+    <button onclick="showSection('catalogo')" class="px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition">Catálogo</button>
+    <button onclick="showSection('coleccion')" class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Mi Colección</button>
+    <button onclick="showSection('add')" class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition">Añadir Pieza</button>
+    <button onclick="showSection('add-denominacion')" class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
   </div>
 
   <!-- Sincronización Manual -->
   <div class="container mx-auto px-4 mt-2 text-center">
     <div class="flex flex-wrap justify-center gap-3">
-      <button onclick="exportarCatalogo()"
-        class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
+      <button onclick="exportarCatalogo()" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
         💾 Exportar Catálogo
       </button>
-      <button onclick="importarDesdeGitHub()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+      <button onclick="importarDesdeGitHub()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
         🔄 Actualizar desde GitHub
       </button>
     </div>
@@ -96,21 +88,17 @@
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Cantidad</span>
-          <input type="number" id="add-cantidad" class="mt-1 block w-full border-gray-300 rounded-md" min="1" value="1"
-            required>
+          <input type="number" id="add-cantidad" class="mt-1 block w-full border-gray-300 rounded-md" min="1" value="1" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Precio de Compra (COP)</span>
-          <input type="number" id="add-precio" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Ej: 500" required>
+          <input type="number" id="add-precio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Ej: 500" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Imagen (opcional)</span>
-          <input type="file" id="add-imagen" accept="image/*"
-            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          <input type="file" id="add-imagen" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
         </label>
-        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">Añadir a
-          Colección</button>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">Añadir a Colección</button>
       </form>
     </div>
 
@@ -126,23 +114,19 @@
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Denominación</span>
-          <input type="text" id="denom-denominacion" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="$50" required>
+          <input type="text" id="denom-denominacion" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="$50" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Año</span>
-          <input type="number" id="denom-anio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="2024"
-            required>
+          <input type="number" id="denom-anio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="2024" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Material</span>
-          <input type="text" id="denom-material" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Acero chapado con níquel" required>
+          <input type="text" id="denom-material" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Acero chapado con níquel" required>
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Tema</span>
-          <input type="text" id="denom-tema" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Cultura Zenú">
+          <input type="text" id="denom-tema" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="Cultura Zenú">
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Rareza</span>
@@ -156,11 +140,9 @@
         </label>
         <label class="block mb-4">
           <span class="text-gray-700 font-medium">Observaciones</span>
-          <textarea id="denom-observaciones" class="mt-1 block w-full border-gray-300 rounded-md" rows="2"
-            placeholder="Ej: Mejor definición en relieve"></textarea>
+          <textarea id="denom-observaciones" class="mt-1 block w-full border-gray-300 rounded-md" rows="2" placeholder="Ej: Mejor definición en relieve"></textarea>
         </label>
-        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">Añadir al
-          Catálogo</button>
+        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">Añadir al Catálogo</button>
       </form>
     </div>
 
@@ -177,5 +159,4 @@
   <script src="./js/storage.js"></script>
   <script src="./js/app.js"></script>
 </body>
-
 </html>
