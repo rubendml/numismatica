@@ -39,7 +39,7 @@ function getFilteredCatalogo() {
     const matchesTipo = !tipo || item.tipo === tipo;
     const matchesDenom = !denom || item.denominacion.toLowerCase().includes(denom);
     const matchesAnio = !anio || item.anio == anio;
-    const matchesSearch = !search || 
+    const matchesSearch = !search ||
       item.denominacion.toLowerCase().includes(search) ||
       (item.tema && item.tema.toLowerCase().includes(search)) ||
       (item.material && item.material.toLowerCase().includes(search));
@@ -200,7 +200,7 @@ function eliminarDenominacion(id) {
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('add-denominacion-form');
   if (form) {
-    form.onsubmit = function(e) {
+    form.onsubmit = function (e) {
       e.preventDefault();
 
       const tipo = document.getElementById('denom-tipo').value;
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Formulario: Añadir a colección
   const addForm = document.getElementById('add-form');
   if (addForm) {
-    addForm.onsubmit = async function(e) {
+    addForm.onsubmit = async function (e) {
       e.preventDefault();
 
       const catalogoId = document.getElementById('add-denominacion').value;
@@ -369,7 +369,7 @@ async function importarDesdeGitHub() {
   try {
     const res = await fetch('./data/catalogo.json?' + new Date().getTime());
     if (!res.ok) throw new Error('No se pudo cargar el archivo');
-    
+
     const nuevoCatalogo = await res.json();
     CATALOGO = nuevoCatalogo;
 
@@ -386,7 +386,7 @@ async function importarDesdeGitHub() {
 }
 
 // --- MARCAR COMO "TIENES" DESDE EL CATÁLOGO ---
-window.marcarComoTengo = function(catalogoId) {
+window.marcarComoTengo = function (catalogoId) {
   const coleccion = getColeccion();
   const yaTiene = coleccion.some(p => p.catalogoId === catalogoId);
 
@@ -412,31 +412,97 @@ window.marcarComoTengo = function(catalogoId) {
 
 // --- SINCRONIZAR COLECCIÓN CON GITHUB (Automático) ---
 async function sincronizarColeccion() {
-  const PROXY_URL = 'numismatica-2yx73p2sw-rubendmls-projects.vercel.app'; // ← Tu URL de Vercel
-  const PATH = 'data/coleccion.json';
+  const btn = document.getElementById('btn-sincronizar');
+  const msg = document.getElementById('mensaje-sincronizacion');
+
+  if (!btn || !msg) return;
+
+  // 1. Mostrar que está cargando
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '🔄 Sincronizando...';
+  msg.classList.remove('hidden');
+  msg.textContent = 'Conectando con el servidor...';
+  msg.className = 'text-xs text-blue-600 mt-1';
+
+  // 2. Validar que hay colección
+  const coleccion = getColeccion();
+  if (coleccion.length === 0) {
+    msg.textContent = '❌ No tienes piezas en tu colección';
+    msg.className = 'text-xs text-red-600 mt-1';
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+    return;
+  }
+
+  // 3. Validar que el proxy URL esté definido
+  const PROXY_URL = 'numismatica-zeta.vercel.app';
+  if (!PROXY_URL || PROXY_URL.includes('vercel.app')) {
+    msg.textContent = '⚠️ URL del proxy no configurada';
+    msg.className = 'text-xs text-yellow-600 mt-1';
+    console.warn('PROXY_URL no está definido correctamente');
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+    return;
+  }
 
   try {
-    const coleccion = getColeccion();
+    // 4. Hacer la solicitud
+    msg.textContent = '📤 Enviando datos a Vercel...';
+
     const response = await fetch(PROXY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        path: PATH,
+        path: 'data/coleccion.json',
         content: coleccion
       })
     });
 
-    const result = await response.json();
+    // 5. Verificar la respuesta
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      const mensajeError = error.error || error.message || 'Error desconocido';
 
-    if (response.ok) {
-      console.log('✅ Colección sincronizada automáticamente');
-    } else {
-      console.error('❌ Error al sincronizar:', result.error);
+      msg.textContent = `❌ Error ${response.status}: ${mensajeError}`;
+      msg.className = 'text-xs text-red-600 mt-1';
+      console.error('Error en la API:', error);
+
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+      return;
     }
+
+    // 6. Éxito
+    const result = await response.json();
+    msg.textContent = '✅ ¡Sincronización exitosa!';
+    msg.className = 'text-xs text-green-600 mt-1';
+
+    console.log('Sincronización completada:', result);
+
+    // Opcional: Mostrar detalles
+    if (result.commit) {
+      console.log('Commit:', result.commit.html_url);
+    }
+
   } catch (error) {
-    console.error('❌ Error al conectar con el proxy:', error);
+    // 7. Error de red o conexión
+    console.error('Error al sincronizar:', error);
+
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      msg.textContent = '🔴 No se pudo conectar con el servidor. Verifica tu conexión o la URL del proxy.';
+    } else {
+      msg.textContent = `⚠️ Error: ${error.message}`;
+    }
+
+    msg.className = 'text-xs text-red-600 mt-1';
+  } finally {
+    // 8. Restaurar botón
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+    }, 1500);
   }
 }
-
