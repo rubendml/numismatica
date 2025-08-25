@@ -36,7 +36,7 @@
     <button onclick="showSection('add-denominacion')" class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
   </div>
 
-  <!-- Sincronización Manual -->
+  <!-- Sincronización Manual y Automática -->
   <div class="container mx-auto px-4 mt-2 text-center">
     <div class="flex flex-wrap justify-center gap-3">
       <button onclick="exportarCatalogo()" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
@@ -44,6 +44,9 @@
       </button>
       <button onclick="importarDesdeGitHub()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
         🔄 Actualizar desde GitHub
+      </button>
+      <button onclick="sincronizarColeccion()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm">
+        🔄 Sincronizar Colección (Automático)
       </button>
     </div>
     <p class="text-xs text-gray-400 mt-1">Exporta y sube a tu repositorio para sincronizar</p>
