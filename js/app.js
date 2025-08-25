@@ -409,3 +409,35 @@ window.marcarComoTengo = function(catalogoId) {
   renderCatalogo();
   renderColeccion();
 };
+
+// --- SINCRONIZAR CON GITHUB (Automático) ---
+async function sincronizarColeccion() {
+  const PROXY_URL = 'https://numismatica.vercel.app/api/sync'; // ← Tu URL de Vercel
+  const PATH = 'data/coleccion.json';
+
+  try {
+    const coleccion = getColeccion();
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: PATH,
+        content: coleccion
+      })
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('✅ Colección sincronizada con éxito en GitHub.');
+      console.log('Sincronización completada:', result);
+    } else {
+      alert(`❌ Error: ${result.error}`);
+    }
+  } catch (error) {
+    console.error('❌ Error al sincronizar:', error);
+    alert('❌ No se pudo conectar con el proxy.');
+  }
+}
