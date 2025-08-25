@@ -44,10 +44,18 @@
       </button>
       <button onclick="importarDesdeGitHub()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
         🔄 Actualizar desde GitHub
-      </button>
-      <button onclick="sincronizarColeccion()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm">
-        🔄 Sincronizar Colección (Automático)
-      </button>
+   <!-- Botón de sincronización con feedback -->
+<div class="container mx-auto px-4 mt-6 text-center">
+  <button 
+    onclick="sincronizarColeccion()" 
+    id="btn-sincronizar" 
+    class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium shadow-md transition"
+    disabled
+  >
+    🔄 Cargando...
+  </button>
+  <p id="mensaje-sincronizacion" class="text-sm text-gray-500 mt-2 hidden">Iniciando...</p>
+</div>
     </div>
     <p class="text-xs text-gray-400 mt-1">Exporta y sube a tu repositorio para sincronizar</p>
   </div>
@@ -163,3 +171,4 @@
   <script src="./js/app.js"></script>
 </body>
 </html>
+
