@@ -412,7 +412,7 @@ window.marcarComoTengo = function(catalogoId) {
 
 // --- SINCRONIZAR COLECCIÓN CON GITHUB (Automático) ---
 async function sincronizarColeccion() {
-  const PROXY_URL = 'https://numismatica.vercel.app/api/sync'; // ← Tu URL de Vercel
+  const PROXY_URL = 'numismatica-2yx73p2sw-rubendmls-projects.vercel.app'; // ← Tu URL de Vercel
   const PATH = 'data/coleccion.json';
 
   try {
@@ -439,3 +439,4 @@ async function sincronizarColeccion() {
     console.error('❌ Error al conectar con el proxy:', error);
   }
 }
+
