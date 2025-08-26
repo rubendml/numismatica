@@ -3,13 +3,13 @@ const ITEMS_PER_PAGE = 20;
 let currentPage = 1;
 let editandoId = null;
 
-// URL del proxy (¡sin espacios al inicio ni al final!)
+// URL del proxy (sin espacios)
 const PROXY_URL = 'https://numismatica-proxy.vercel.app';
 
 // Inicializa CATALOGO
 let CATALOGO = [];
 
-// Fecha de actualización (puedes cambiarla manualmente)
+// Fecha de actualización
 const FECHA_ACTUALIZACION = "29 de mayo de 2025";
 
 // --- MOSTRAR SECCIÓN ---
