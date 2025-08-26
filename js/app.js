@@ -3,6 +3,12 @@ const ITEMS_PER_PAGE = 20;
 let currentPage = 1;
 let editandoId = null;
 
+// URL del proxy (sin espacios al final)
+const PROXY_URL = 'https://numismatica-proxy.vercel.app';
+
+// Inicializa CATALOGO
+let CATALOGO = [];
+
 // --- MOSTRAR SECCIÓN ---
 function showSection(section) {
   document.querySelectorAll('div[id^="section-"]').forEach(el => el.classList.add('hidden'));
@@ -28,6 +34,130 @@ function showSection(section) {
   if (section === 'add') populateAddForm();
 }
 
+// --- CARGAR CATÁLOGO DESDE EL PROXY ---
+async function importarDesdeGitHub() {
+  if (!confirm('¿Actualizar desde GitHub? Se perderán cambios locales no exportados.')) return;
+
+  try {
+    const response = await fetch(`${PROXY_URL}/api/sync?path=data/catalogo.json`);
+    
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: No se pudo cargar el archivo`);
+    }
+
+    const nuevoCatalogo = await response.json();
+    
+    if (!Array.isArray(nuevoCatalogo)) {
+      throw new Error('El catálogo no tiene el formato esperado (debe ser un array)');
+    }
+
+    CATALOGO = nuevoCatalogo;
+
+    // Guardar en localStorage
+    localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
+
+    alert('✅ Catálogo actualizado desde GitHub.');
+    renderCatalogo();
+    renderColeccion();
+  } catch (error) {
+    console.error('❌ Error al cargar desde el proxy:', error);
+    alert(`No se pudo cargar el catálogo: ${error.message}`);
+  }
+}
+
+// --- GUARDAR COLECCIÓN EN GITHUB (PROXY) ---
+async function sincronizarColeccion() {
+  const btn = document.getElementById('btn-sincronizar');
+  const msg = document.getElementById('mensaje-sincronizacion');
+
+  if (!btn || !msg) return;
+
+  // Mostrar estado de carga
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '🔄 Sincronizando...';
+  msg.classList.remove('hidden');
+  msg.textContent = 'Conectando con el servidor...';
+  msg.className = 'text-xs text-blue-600 mt-1';
+
+  // Validar colección
+  const coleccion = getColeccion();
+  if (coleccion.length === 0) {
+    msg.textContent = '❌ No tienes piezas en tu colección';
+    msg.className = 'text-xs text-red-600 mt-1';
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+    return;
+  }
+
+  // Validar URL del proxy
+  if (!PROXY_URL || PROXY_URL.trim() === '') {
+    msg.textContent = '⚠️ URL del proxy no configurada';
+    msg.className = 'text-xs text-yellow-600 mt-1';
+    console.warn('PROXY_URL no está definido');
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+    return;
+  }
+
+  try {
+    msg.textContent = '📤 Enviando datos a Vercel...';
+
+    const response = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        path: 'data/coleccion.json',
+        content: coleccion
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      const mensajeError = error.error || error.message || 'Error desconocido';
+      msg.textContent = `❌ Error ${response.status}: ${mensajeError}`;
+      msg.className = 'text-xs text-red-600 mt-1';
+      console.error('Error en la API:', error);
+      return;
+    }
+
+    const result = await response.json();
+    msg.textContent = '✅ ¡Sincronización exitosa!';
+    msg.className = 'text-xs text-green-600 mt-1';
+
+    console.log('Sincronización completada:', result);
+  } catch (error) {
+    console.error('Error al sincronizar:', error);
+    msg.textContent = error.name === 'TypeError' ? '🔴 No se pudo conectar al servidor.' : `⚠️ ${error.message}`;
+    msg.className = 'text-xs text-red-600 mt-1';
+  } finally {
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+    }, 1500);
+  }
+}
+
+// --- MIS COLECCIÓN (localStorage) ---
+function getColeccion() {
+  const saved = localStorage.getItem('miColeccion');
+  return saved ? JSON.parse(saved) : [];
+}
+
+function addPieza(pieza) {
+  const coleccion = getColeccion();
+  coleccion.push(pieza);
+  localStorage.setItem('miColeccion', JSON.stringify(coleccion));
+}
+
+function removePieza(id) {
+  const coleccion = getColeccion();
+  const nueva = coleccion.filter(p => p.id !== id);
+  localStorage.setItem('miColeccion', JSON.stringify(nueva));
+}
+
 // --- FILTROS Y PAGINACIÓN ---
 function getFilteredCatalogo() {
   const tipo = document.getElementById('filter-tipo')?.value || '';
@@ -35,7 +165,7 @@ function getFilteredCatalogo() {
   const anio = document.getElementById('filter-anio')?.value || '';
   const search = (document.getElementById('search-input')?.value || '').toLowerCase();
 
-  return (window.CATALOGO || []).filter(item => {
+  return (CATALOGO || []).filter(item => {
     const matchesTipo = !tipo || item.tipo === tipo;
     const matchesDenom = !denom || item.denominacion.toLowerCase().includes(denom);
     const matchesAnio = !anio || item.anio == anio;
@@ -59,7 +189,6 @@ function renderCatalogo() {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  // Filtros
   container.innerHTML = `
     <div class="mb-6 bg-white p-4 rounded-lg shadow">
       <div class="flex flex-col md:flex-row gap-4">
@@ -119,7 +248,6 @@ function renderCatalogo() {
         <p class="text-sm text-gray-500"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-gray-600 mt-2">${item.observaciones}</p>
         
-        <!-- Botones de editar y eliminar -->
         <div class="mt-4 flex justify-end gap-2">
           <button onclick="editarDenominacion('${item.id}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium">✏️ Editar</button>
           <button onclick="eliminarDenominacion('${item.id}')" class="text-red-600 hover:text-red-800 text-sm font-medium">🗑️ Eliminar</button>
@@ -129,7 +257,6 @@ function renderCatalogo() {
     grid.appendChild(card);
   });
 
-  // Paginación
   const pagination = document.createElement("div");
   pagination.className = "mt-8 flex justify-center items-center gap-4";
   pagination.innerHTML = `
@@ -158,7 +285,7 @@ function nextPage(totalPages) {
   }
 }
 
-// --- EDITAR DENOMINACIÓN ---
+// --- EDITAR Y ELIMINAR DENOMINACIONES ---
 function editarDenominacion(id) {
   const item = CATALOGO.find(d => d.id === id);
   if (!item) return;
@@ -181,13 +308,8 @@ function editarDenominacion(id) {
   showSection('add-denominacion');
 }
 
-// --- ELIMINAR DENOMINACIÓN ---
 function eliminarDenominacion(id) {
-  const item = CATALOGO.find(d => d.id === id);
-  if (!item) return;
-
-  const confirmado = confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`);
-  if (!confirmado) return;
+  if (!confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`)) return;
 
   CATALOGO = CATALOGO.filter(d => d.id !== id);
   localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
@@ -196,8 +318,20 @@ function eliminarDenominacion(id) {
   renderCatalogo();
 }
 
-// --- GUARDAR CAMBIOS O NUEVA DENOMINACIÓN ---
+// --- FORMULARIOS ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Cargar datos iniciales
+  const saved = localStorage.getItem('catalogoPersonalizado');
+  if (saved) {
+    try {
+      CATALOGO = JSON.parse(saved);
+    } catch (e) {
+      console.warn('No se pudo cargar el catálogo local');
+    }
+  }
+  importarDesdeGitHub(); // Carga desde GitHub
+
+  // Formulario: Añadir al catálogo
   const form = document.getElementById('add-denominacion-form');
   if (form) {
     form.onsubmit = function (e) {
@@ -213,54 +347,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
 
       if (editandoId) {
-        // Actualizar
         const index = CATALOGO.findIndex(d => d.id === editandoId);
         if (index !== -1) {
-          CATALOGO[index] = {
-            ...CATALOGO[index],
-            tipo,
-            denominacion,
-            anio,
-            material,
-            tema,
-            rareza,
-            observaciones,
-            valor
-          };
+          CATALOGO[index] = { id: editandoId, tipo, denominacion, anio, material, tema, rareza, observaciones, valor };
         }
-
-        // Resetear modo edición
         const btn = document.querySelector('#add-denominacion-form button[type="submit"]');
         btn.textContent = 'Añadir al Catálogo';
         btn.classList.remove('bg-blue-600');
         btn.classList.add('bg-purple-600');
         editandoId = null;
-
-        alert(`✅ Denominación "${denominacion} (${anio})" actualizada.`);
+        alert(`✅ Actualizada: ${denominacion} (${anio})`);
       } else {
-        // Nueva denominación
         const id = `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
-
-        const nuevaDenominacion = {
-          id,
-          tipo,
-          denominacion,
-          anio,
-          material,
-          tema,
-          rareza,
-          observaciones,
-          valor
-        };
-
-        CATALOGO.push(nuevaDenominacion);
-        alert(`✅ Denominación "${denominacion} (${anio})" añadida al catálogo.`);
+        CATALOGO.push({ id, tipo, denominacion, anio, material, tema, rareza, observaciones, valor });
+        alert(`✅ Añadida: ${denominacion} (${anio})`);
       }
 
-      // Guardar en localStorage
       localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
-
-      // Recargar vista
       showSection('catalogo');
     };
   }
@@ -313,7 +416,7 @@ function renderColeccion() {
   }
 
   coleccion.forEach(item => {
-    const catalogoItem = (window.CATALOGO || []).find(c => c.id === item.catalogoId);
+    const catalogoItem = (CATALOGO || []).find(c => c.id === item.catalogoId);
     const denominacion = catalogoItem ? catalogoItem.denominacion : item.denominacion;
 
     const card = document.createElement('div');
@@ -336,13 +439,12 @@ function renderColeccion() {
   });
 }
 
-// --- AÑADIR PIEZA A COLECCIÓN ---
 function populateAddForm() {
   const select = document.getElementById('add-denominacion');
   if (!select) return;
 
   select.innerHTML = '';
-  (window.CATALOGO || []).forEach(item => {
+  (CATALOGO || []).forEach(item => {
     const opt = document.createElement('option');
     opt.value = item.id;
     opt.textContent = `${item.denominacion} (${item.anio})`;
@@ -350,42 +452,7 @@ function populateAddForm() {
   });
 }
 
-// --- EXPORTAR / IMPORTAR ---
-function exportarCatalogo() {
-  const dataStr = JSON.stringify(window.CATALOGO, null, 2);
-  const blob = new Blob([dataStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'catalogo.json';
-  a.click();
-  URL.revokeObjectURL(url);
-  alert('✅ Archivo exportado. ¡Súbelo a GitHub!');
-}
-
-async function importarDesdeGitHub() {
-  if (!confirm('¿Actualizar desde GitHub? Se perderán cambios locales no exportados.')) return;
-
-  try {
-    const res = await fetch('./data/catalogo.json?' + new Date().getTime());
-    if (!res.ok) throw new Error('No se pudo cargar el archivo');
-
-    const nuevoCatalogo = await res.json();
-    CATALOGO = nuevoCatalogo;
-
-    // Guardar en localStorage
-    localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
-
-    alert('✅ Catálogo actualizado desde GitHub.');
-    renderCatalogo();
-    renderColeccion();
-  } catch (error) {
-    console.error('❌ Error al actualizar desde GitHub:', error);
-    alert('No se pudo actualizar. Verifica tu conexión o que el archivo exista.');
-  }
-}
-
-// --- MARCAR COMO "TIENES" DESDE EL CATÁLOGO ---
+// --- MARCAR COMO "TIENES" ---
 window.marcarComoTengo = function (catalogoId) {
   const coleccion = getColeccion();
   const yaTiene = coleccion.some(p => p.catalogoId === catalogoId);
@@ -410,107 +477,15 @@ window.marcarComoTengo = function (catalogoId) {
   renderColeccion();
 };
 
-// --- SINCRONIZAR COLECCIÓN CON GITHUB (Automático) ---
-async function sincronizarColeccion() {
-  const btn = document.getElementById('btn-sincronizar');
-  const msg = document.getElementById('mensaje-sincronizacion');
-
-  if (!btn || !msg) return;
-
-  // 1. Mostrar que está cargando
-  const textoOriginal = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = '🔄 Sincronizando...';
-  msg.classList.remove('hidden');
-  msg.textContent = 'Conectando con el servidor...';
-  msg.className = 'text-xs text-blue-600 mt-1';
-
-  // 2. Validar que hay colección
-  const coleccion = getColeccion();
-  if (coleccion.length === 0) {
-    msg.textContent = '❌ No tienes piezas en tu colección';
-    msg.className = 'text-xs text-red-600 mt-1';
-    btn.disabled = false;
-    btn.textContent = textoOriginal;
-    return;
-  }
-
-  // 3. Validar que el proxy URL esté definido
-  const PROXY_URL = 'https://numismatica-proxy.vercel.app'; // ← Cambia por tu URL real
-  if (!PROXY_URL || PROXY_URL.includes('vercel.app')) {
-    msg.textContent = '⚠️ URL del proxy no configurada';
-    msg.className = 'text-xs text-yellow-600 mt-1';
-    console.warn('PROXY_URL no está definido correctamente');
-    btn.disabled = false;
-    btn.textContent = textoOriginal;
-    return;
-  }
-
-  try {
-    // 4. Hacer la solicitud
-    msg.textContent = '📤 Enviando datos a Vercel...';
-
-    const response = await fetch(PROXY_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        path: 'data/coleccion.json',
-        content: coleccion
-      })
-    });
-
-    // 5. Verificar la respuesta
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      const mensajeError = error.error || error.message || 'Error desconocido';
-
-      msg.textContent = `❌ Error ${response.status}: ${mensajeError}`;
-      msg.className = 'text-xs text-red-600 mt-1';
-      console.error('Error en la API:', error);
-
-      btn.disabled = false;
-      btn.textContent = textoOriginal;
-      return;
-    }
-
-    // 6. Éxito
-    const result = await response.json();
-    msg.textContent = '✅ ¡Sincronización exitosa!';
-    msg.className = 'text-xs text-green-600 mt-1';
-
-    console.log('Sincronización completada:', result);
-
-    // Opcional: Mostrar detalles
-    if (result.commit) {
-      console.log('Commit:', result.commit.html_url);
-    }
-
-  } catch (error) {
-    // 7. Error de red o conexión
-    console.error('Error al sincronizar:', error);
-
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      msg.textContent = '🔴 No se pudo conectar con el servidor. Verifica tu conexión o la URL del proxy.';
-    } else {
-      msg.textContent = `⚠️ Error: ${error.message}`;
-    }
-
-    msg.className = 'text-xs text-red-600 mt-1';
-  } finally {
-    // 8. Restaurar botón
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.textContent = textoOriginal;
-    }, 1500);
-  }
-
+// --- EXPORTAR ---
+function exportarCatalogo() {
+  const dataStr = JSON.stringify(CATALOGO, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'catalogo.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  alert('✅ Archivo exportado. ¡Súbelo a GitHub!');
 }
-
-
-
-
-
-
-
