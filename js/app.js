@@ -3,11 +3,14 @@ const ITEMS_PER_PAGE = 20;
 let currentPage = 1;
 let editandoId = null;
 
-// URL del proxy (sin espacios al inicio ni al final)
+// URL del proxy (¡sin espacios al inicio ni al final!)
 const PROXY_URL = 'https://numismatica-proxy.vercel.app';
 
 // Inicializa CATALOGO
 let CATALOGO = [];
+
+// Fecha de actualización (puedes cambiarla manualmente)
+const FECHA_ACTUALIZACION = "29 de mayo de 2025";
 
 // --- MOSTRAR SECCIÓN ---
 function showSection(section) {
@@ -36,7 +39,7 @@ function showSection(section) {
 
 // --- CARGAR CATÁLOGO DESDE EL PROXY ---
 async function importarDesdeGitHub() {
-  if (!confirm('¿Actualizar desde GitHub? Se perderán cambios locales no exportados.')) return;
+  const welcome = document.getElementById('welcome-message');
 
   try {
     const response = await fetch(`${PROXY_URL}/api/sync?path=data/catalogo.json`);
@@ -56,12 +59,50 @@ async function importarDesdeGitHub() {
     // Guardar en localStorage
     localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
 
+    // Mostrar fecha de actualización
+    if (welcome) {
+      welcome.innerHTML = `<p class="text-sm text-green-600 font-medium">✅ Última actualización: <strong>${FECHA_ACTUALIZACION}</strong></p>`;
+    }
+
+    // Activar botón de sincronización
+    const btn = document.getElementById('btn-sincronizar');
+    const msg = document.getElementById('mensaje-sincronizacion');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = '🔄 Sincronizar Colección';
+    }
+    if (msg) {
+      msg.classList.remove('hidden');
+      msg.textContent = 'Listo para sincronizar';
+      msg.className = 'text-xs text-green-600 mt-1';
+    }
+
     alert('✅ Catálogo actualizado desde GitHub.');
     renderCatalogo();
     renderColeccion();
   } catch (error) {
     console.error('❌ Error al cargar desde el proxy:', error);
-    alert(`No se pudo cargar el catálogo: ${error.message}`);
+
+    // Mostrar error en UI
+    if (welcome) {
+      welcome.innerHTML = `<p class="text-sm text-red-600 font-medium">❌ Error al cargar el catálogo: ${error.message}</p>`;
+    }
+
+    const msg = document.getElementById('mensaje-sincronizacion');
+    if (msg) {
+      msg.classList.remove('hidden');
+      msg.textContent = '❌ Error al cargar el catálogo';
+      msg.className = 'text-xs text-red-600 mt-1';
+    }
+
+    // Mostrar error en el catálogo
+    const container = document.getElementById('section-catalogo');
+    if (container) {
+      container.innerHTML = `
+        <p class="text-red-500 text-center py-10">
+          No se pudo cargar el catálogo. Verifica tu conexión o que el archivo exista.
+        </p>`;
+    }
   }
 }
 
@@ -324,7 +365,7 @@ function eliminarDenominacion(id) {
 
 // --- FORMULARIOS ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar datos iniciales
+  // Cargar datos iniciales desde localStorage
   const saved = localStorage.getItem('catalogoPersonalizado');
   if (saved) {
     try {
@@ -333,7 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
       console.warn('No se pudo cargar el catálogo local');
     }
   }
-  importarDesdeGitHub(); // Carga desde GitHub
+
+  // Cargar desde el proxy
+  importarDesdeGitHub();
 
   // Formulario: Añadir al catálogo
   const form = document.getElementById('add-denominacion-form');
