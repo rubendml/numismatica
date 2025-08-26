@@ -4,7 +4,7 @@ let currentPage = 1;
 let editandoId = null;
 
 // URL del proxy (sin espacios al final)
-const PROXY_URL = 'https://numismatica-proxy.vercel.app';
+const PROXY_URL ='https://numismatica-proxy.vercel.app';
 
 // Inicializa CATALOGO
 let CATALOGO = [];
@@ -489,4 +489,5 @@ function exportarCatalogo() {
   URL.revokeObjectURL(url);
   alert('✅ Archivo exportado. ¡Súbelo a GitHub!');
 }
+
 
