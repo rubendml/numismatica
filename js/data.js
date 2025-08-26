@@ -1,11 +1,26 @@
+// data.js - Carga el catálogo usando el proxy
 window.CATALOGO = [];
-const FECHA_ACTUALIZACION = "29 de mayo de 2025"; // Cambia cada vez que actualices
+const FECHA_ACTUALIZACION = "29 de mayo de 2025";
+
+// URL del proxy (sin espacios)
+const PROXY_URL = 'https://numismatica-proxy.vercel.app';
 
 async function loadCatalogo() {
   try {
-    const res = await fetch('./data/catalogo.json?' + new Date().getTime());
-    if (!res.ok) throw new Error('No se pudo cargar catalogo.json');
-    window.CATALOGO = await res.json();
+    // ✅ Usa el proxy para cargar el catálogo
+    const response = await fetch(`${PROXY_URL}/api/sync?path=data/catalogo.json`);
+    
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: No se pudo cargar el catálogo`);
+    }
+
+    const data = await response.json();
+    
+    if (!Array.isArray(data)) {
+      throw new Error('El catálogo no tiene formato de array');
+    }
+
+    window.CATALOGO = data;
 
     // Mostrar fecha
     const welcome = document.getElementById('welcome-message');
@@ -26,16 +41,24 @@ async function loadCatalogo() {
       msg.className = 'text-xs text-green-600 mt-1';
     }
 
-    // Inicializar
+    // Inicializar vistas
     if (typeof renderCatalogo === 'function') renderCatalogo();
     if (typeof renderColeccion === 'function') renderColeccion();
     if (typeof populateAddForm === 'function') populateAddForm();
 
   } catch (error) {
     console.error('❌ Error en data.js:', error);
-    document.getElementById('section-catalogo').innerHTML = `<p class="text-red-500 text-center py-10">Error al cargar el catálogo. Verifica que 'data/catalogo.json' exista.</p>`;
+    
+    const container = document.getElementById('section-catalogo');
+    if (container) {
+      container.innerHTML = `
+        <p class="text-red-500 text-center py-10">
+          Error al cargar el catálogo. 
+          <br>
+          <small>Verifica tu conexión o que el archivo exista en GitHub.</small>
+        </p>`;
+    }
 
-    // Mostrar error en sincronización
     const msg = document.getElementById('mensaje-sincronizacion');
     if (msg) {
       msg.classList.remove('hidden');
