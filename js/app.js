@@ -489,3 +489,4 @@ function exportarCatalogo() {
   URL.revokeObjectURL(url);
   alert('✅ Archivo exportado. ¡Súbelo a GitHub!');
 }
+
