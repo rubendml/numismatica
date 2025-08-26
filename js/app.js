@@ -3,8 +3,8 @@ const ITEMS_PER_PAGE = 20;
 let currentPage = 1;
 let editandoId = null;
 
-// URL del proxy (sin espacios al final)
-const PROXY_URL ='numismatica-lac.vercel.app';
+// URL del proxy (sin espacios al inicio ni al final)
+const PROXY_URL = 'https://numismatica-proxy.vercel.app';
 
 // Inicializa CATALOGO
 let CATALOGO = [];
@@ -309,7 +309,11 @@ function editarDenominacion(id) {
 }
 
 function eliminarDenominacion(id) {
-  if (!confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`)) return;
+  const item = CATALOGO.find(d => d.id === id);
+  if (!item) return;
+
+  const confirmado = confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`);
+  if (!confirmado) return;
 
   CATALOGO = CATALOGO.filter(d => d.id !== id);
   localStorage.setItem('catalogoPersonalizado', JSON.stringify(CATALOGO));
@@ -489,6 +493,3 @@ function exportarCatalogo() {
   URL.revokeObjectURL(url);
   alert('✅ Archivo exportado. ¡Súbelo a GitHub!');
 }
-
-
-
