@@ -42,7 +42,7 @@ async function importarDesdeGitHub() {
   const welcome = document.getElementById('welcome-message');
 
   try {
-    const response = await fetch(`${PROXY_URL}/api/sync?path=data/catalogo.json`);
+    const response = await fetch(`${PROXY_URL}/api/sync?path=data/catálogo.json`);
     
     if (!response.ok) {
       throw new Error(`Error ${response.status}: No se pudo cargar el archivo`);
