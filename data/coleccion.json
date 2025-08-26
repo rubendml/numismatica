@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": 1,
+    "nombre": "500 Pesos",
+    "ano": 1992,
+    "material": "Cobre-Níquel",
+    "estado": "Muy Bueno"
+  }
+]
