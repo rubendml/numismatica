@@ -23,15 +23,126 @@
     </div>
   </header>
 
-  <!-- Secciones -->
+  <!-- Botones de navegación -->
+  <div class="bg-gray-200 px-4 py-2 shadow-sm">
+    <div class="flex flex-wrap gap-2 justify-center">
+      <button onclick="showSection('catalogo')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded font-medium transition">
+        Catálogo
+      </button>
+      <button onclick="showSection('coleccion')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium transition">
+        Mi Colección
+      </button>
+      <button onclick="showSection('add')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium transition">
+        Añadir a Mi Colección
+      </button>
+      <button onclick="showSection('add-denominacion')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded font-medium transition">
+        Añadir o Editar Denominación
+      </button>
+    </div>
+  </div>
+
+  <!-- Sección Home (inicial) -->
   <div id="section-home" class="p-6 text-center">
     <h2 class="text-xl text-gray-700">Iniciando...</h2>
   </div>
 
-  <div id="section-catalogo" class="hidden"></div>
-  <div id="section-coleccion" class="hidden p-4"></div>
-  <div id="section-add" class="hidden p-4"></div>
-  <div id="section-add-denominacion" class="hidden p-4"></div>
+  <!-- Sección Catálogo -->
+  <div id="section-catalogo" class="hidden p-4"></div>
+
+  <!-- Sección Mi Colección -->
+  <div id="section-coleccion" class="hidden p-4">
+    <h2 class="text-xl font-bold text-blue-700 mb-4">Mi Colección</h2>
+    <div id="mensaje-sincronizacion" class="hidden text-xs mt-1"></div>
+    <button id="btn-sincronizar" class="bg-gray-400 text-white px-4 py-2 rounded text-sm font-semibold mb-4" disabled>
+      🔄 Sincronizar Colección
+    </button>
+    <div id="coleccion-items" class="space-y-3"></div>
+  </div>
+
+  <!-- Sección Añadir a Colección -->
+  <div id="section-add" class="hidden p-4">
+    <h2 class="text-xl font-bold text-green-700 mb-4">Añadir a Mi Colección</h2>
+    <form id="add-form" class="space-y-4 bg-white p-6 rounded-lg shadow">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Denominación</label>
+        <select id="add-denominacion" class="w-full border border-gray-300 rounded px-3 py-2" required></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Año</label>
+        <input type="number" id="add-anio" class="w-full border border-gray-300 rounded px-3 py-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Grado</label>
+        <select id="add-grado" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="BU">BU (Brillante Universal)</option>
+          <option value="SP">SP (Semi Brillante)</option>
+          <option value="PR">PR (Proof)</option>
+          <option value="Circulada">Circulada</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Cantidad</label>
+        <input type="number" id="add-cantidad" class="w-full border border-gray-300 rounded px-3 py-2" value="1" min="1" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Precio de Compra (COP)</label>
+        <input type="number" id="add-precio" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="Ej: 50000" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Foto (opcional)</label>
+        <input type="file" id="add-imagen" class="w-full border border-gray-300 rounded px-3 py-2" accept="image/*">
+      </div>
+      <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded font-semibold">
+        Añadir a Colección
+      </button>
+    </form>
+  </div>
+
+  <!-- Sección Añadir/Editar Denominación -->
+  <div id="section-add-denominacion" class="hidden p-4">
+    <h2 class="text-xl font-bold text-purple-700 mb-4">Añadir o Editar Denominación</h2>
+    <form id="add-denominacion-form" class="space-y-4 bg-white p-6 rounded-lg shadow">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Tipo</label>
+        <select id="denom-tipo" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="Moneda">Moneda</option>
+          <option value="Billete">Billete</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Denominación</label>
+        <input type="text" id="denom-denominacion" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="$100" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Año</label>
+        <input type="number" id="denom-anio" class="w-full border border-gray-300 rounded px-3 py-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Material</label>
+        <input type="text" id="denom-material" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="Aluminio-bronce" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Tema</label>
+        <input type="text" id="denom-tema" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="General">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Rareza</label>
+        <select id="denom-rareza" class="w-full border border-gray-300 rounded px-3 py-2" required>
+          <option value="Común">Común</option>
+          <option value="Rara">Rara</option>
+          <option value="Muy rara">Muy rara</option>
+          <option value="Extremadamente rara">Extremadamente rara</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+        <textarea id="denom-observaciones" class="w-full border border-gray-300 rounded px-3 py-2" rows="2" placeholder="Detalles adicionales..."></textarea>
+      </div>
+      <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded font-semibold">
+        Añadir al Catálogo
+      </button>
+    </form>
+  </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
