@@ -1,187 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
-
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi Colección Numismática</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Estilos personalizados -->
-  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gradient-to-br from-amber-50 to-orange-100 min-h-screen">
 
   <!-- Header -->
-  <header class="bg-gradient-to-r from-amber-600 via-yellow-500 to-orange-500 text-white shadow-lg">
-    <div class="container mx-auto px-4 py-6 text-center">
-      <img src="./assets/logo.png" alt="Logo" class="w-12 h-12 inline-block mr-3">
-      <h1 class="text-3xl md:text-4xl font-bold">🪙 Mi Colección Numismática</h1>
-      <h2 class="text-2xl md:text-3xl font-bold">🦁 Rubén Darío Monroy León</h2>
-      <p class="mt-2 opacity-90">Seguimiento de monedas y billetes circulantes en Colombia</p>
+  <header class="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-4 shadow-md">
+    <div class="flex items-center space-x-3">
+      <img src="assets/logo.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white">
+      <div>
+        <h1 class="text-2xl font-bold">Mi Colección Numismática</h1>
+        <p class="text-sm">Rubén Darío Monroy León</p>
+      </div>
+    </div>
+    <div class="mt-2 text-sm text-amber-100">
+      Seguimiento de monedas y billetes circulantes en Colombia
     </div>
   </header>
 
-  <!-- Mensaje de bienvenida -->
-  <div id="welcome-message" class="container mx-auto px-4 mt-4 text-center">
-    <p class="text-sm text-gray-500">Cargando...</p>
+  <!-- Secciones -->
+  <div id="section-home" class="p-6 text-center">
+    <h2 class="text-xl text-gray-700">Iniciando...</h2>
   </div>
 
-  <!-- Tabs -->
-  <div class="container mx-auto px-4 mt-6 flex justify-center gap-4 mb-6 flex-wrap">
-    <button onclick="showSection('catalogo')"
-      class="px-6 py-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition">Catálogo</button>
-    <button onclick="showSection('coleccion')"
-      class="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">Mi Colección</button>
-    <button onclick="showSection('add')"
-      class="px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition">Añadir Pieza</button>
-    <button onclick="showSection('add-denominacion')"
-      class="px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition">+ Denominación</button>
-  </div>
+  <div id="section-catalogo" class="hidden"></div>
+  <div id="section-coleccion" class="hidden p-4"></div>
+  <div id="section-add" class="hidden p-4"></div>
+  <div id="section-add-denominacion" class="hidden p-4"></div>
 
-  <!-- Sincronización Manual y Automática -->
-  <div class="container mx-auto px-4 mt-2 text-center">
-    <div class="flex flex-wrap justify-center gap-3">
-      <button onclick="exportarCatalogo()"
-        class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
-        💾 Exportar Catálogo
-      </button>
-      <button onclick="importarDesdeGitHub()"
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
-        🔄 Actualizar desde GitHub
-      </button>
-      <button onclick="sincronizarColeccion()" id="btn-sincronizar"
-        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm" disabled>
-        🔄 Sincronizar Colección
-      </button>
-    </div>
-    <p id="mensaje-sincronizacion" class="text-xs text-gray-400 mt-1 hidden">Iniciando...</p>
-  </div>
-
-  <!-- Contenido principal -->
-  <div class="container mx-auto px-4 pb-12">
-
-    <div id="section-catalogo" class="mt-6 hidden">
-      <p class="text-center text-gray-500">Cargando catálogo...</p>
-    </div>
-
-    <div id="section-coleccion" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Mis Piezas</h2>
-      <div id="coleccion-items" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <p>Cargando...</p>
-      </div>
-    </div>
-
-    <div id="section-add" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Añadir a Mi Colección</h2>
-      <form id="add-form" class="bg-white p-6 rounded-xl shadow-lg">
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Denominación</span>
-          <select id="add-denominacion" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            <option value="">Cargando...</option>
-          </select>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Estado (Grado)</span>
-          <select id="add-grado" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            <option value="PO">PO (Pobre)</option>
-            <option value="FR">FR (Frágil)</option>
-            <option value="VG">VG (Muy Bueno)</option>
-            <option value="F">F (Bueno)</option>
-            <option value="VF">VF (Muy Fino)</option>
-            <option value="XF">XF (Extra Fino)</option>
-            <option value="AU">AU (Casi Acuñación)</option>
-            <option value="BU">BU (Brillante de Ley)</option>
-            <option value="UNC">UNC (Sin Circulación)</option>
-          </select>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Cantidad</span>
-          <input type="number" id="add-cantidad" class="mt-1 block w-full border-gray-300 rounded-md" min="1" value="1"
-            required>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Precio de Compra (COP)</span>
-          <input type="number" id="add-precio" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Ej: 500" required>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Imagen (opcional)</span>
-          <input type="file" id="add-imagen" accept="image/*"
-            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-        </label>
-        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">Añadir a
-          Colección</button>
-      </form>
-    </div>
-
-    <div id="section-add-denominacion" class="hidden mt-6">
-      <h2 class="text-2xl font-bold mb-4">Añadir o Editar Denominación</h2>
-      <form id="add-denominacion-form" class="bg-white p-6 rounded-xl shadow-lg">
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Tipo</span>
-          <select id="denom-tipo" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            <option value="Moneda">Moneda</option>
-            <option value="Billete">Billete</option>
-          </select>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Denominación</span>
-          <input type="text" id="denom-denominacion" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="$50" required>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Año</span>
-          <input type="number" id="denom-anio" class="mt-1 block w-full border-gray-300 rounded-md" placeholder="2024"
-            required>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Material</span>
-          <input type="text" id="denom-material" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Acero chapado con níquel" required>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Tema</span>
-          <input type="text" id="denom-tema" class="mt-1 block w-full border-gray-300 rounded-md"
-            placeholder="Cultura Zenú">
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Rareza</span>
-          <select id="denom-rareza" class="mt-1 block w-full border-gray-300 rounded-md" required>
-            <option value="Común">Común</option>
-            <option value="Menos común">Menos común</option>
-            <option value="Raro">Raro</option>
-            <option value="Muy raro">Muy raro</option>
-            <option value="Extremadamente rara">Extremadamente rara</option>
-          </select>
-        </label>
-        <label class="block mb-4">
-          <span class="text-gray-700 font-medium">Observaciones</span>
-          <textarea id="denom-observaciones" class="mt-1 block w-full border-gray-300 rounded-md" rows="2"
-            placeholder="Ej: Mejor definición en relieve"></textarea>
-        </label>
-        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">Añadir al
-          Catálogo</button>
-      </form>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <footer class="mt-12 bg-gray-800 text-white py-6 text-center text-sm">
-    <p>© Creaciones Manotas - 2025 Mi Colección Numismática</p>
-    <p>Datos basados en emisiones del Banco de la República</p>
-  </footer>
-
-  <!-- Scripts al final -->
-  <script src="./js/data.js"></script>
-  <script src="./js/storage.js"></script>
-  <script src="./js/app.js"></script>
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/app.js"></script>
 </body>
-
-
 </html>
