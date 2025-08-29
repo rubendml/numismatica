@@ -1,7 +1,7 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
 // ⚠️ Reemplaza con tus credenciales
-const SUPABASE_URL = 'https://tu-proyecto.supabase.co'; // ← Cambia esto
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // ← Cambia esto
+const SUPABASE_URL = 'https://sicrjwhjbwmbmcohydyr.supabase.co'; // ← Cambia esto
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpY3Jqd2hqYndtYm1jb2h5ZHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1MDAzNzksImV4cCI6MjA3MjA3NjM3OX0.fS7MONe-OE1hgT6qUVHBRhB-nR1da3I6UGs4n5VKVJk'; // ← Cambia esto
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -371,3 +371,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostrar sección inicial
   showSection('catalogo');
 });
+
