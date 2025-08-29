@@ -1,7 +1,7 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
 // ⚠️ Reemplaza con tus credenciales
-const SUPABASE_URL = 'https://sicrjwhjbwmbmcohydyr.supabase.co'; // ← Cambia esto
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpY3Jqd2hqYndtYm1jb2h5ZHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1MDAzNzksImV4cCI6MjA3MjA3NjM3OX0.fS7MONe-OE1hgT6qUVHBRhB-nR1da3I6UGs4n5VKVJk'; // ← Cambia esto
+const SUPABASE_URL = 'https://tu-proyecto.supabase.co'; // ← Cambia esto
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // ← Cambia esto
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -28,13 +28,23 @@ function showSection(section) {
     active.classList.remove('bg-gray-300');
     if (section === 'catalogo') active.classList.add('bg-amber-600');
     if (section === 'coleccion') active.classList.add('bg-blue-600');
-    if (section === 'add') active.classList.add('bg-green-600');
     if (section === 'add-denominacion') active.classList.add('bg-purple-600');
   }
 
   if (section === 'catalogo') renderCatalogo();
   if (section === 'coleccion') renderColeccion();
-  if (section === 'add') populateAddForm();
+  if (section === 'add-denominacion') {
+    // Reiniciar formulario
+    if (editandoId) {
+      document.querySelector('#add-denominacion-form button[type="submit"]').textContent = 'Guardar Cambios';
+      document.querySelector('#add-denominacion-form button[type="submit"]').classList.remove('bg-purple-600');
+      document.querySelector('#add-denominacion-form button[type="submit"]').classList.add('bg-blue-600');
+    } else {
+      document.querySelector('#add-denominacion-form button[type="submit"]').textContent = 'Añadir al Catálogo';
+      document.querySelector('#add-denominacion-form button[type="submit"]').classList.remove('bg-blue-600');
+      document.querySelector('#add-denominacion-form button[type="submit"]').classList.add('bg-purple-600');
+    }
+  }
 }
 
 // --- CARGAR CATÁLOGO DESDE SUPABASE ---
@@ -51,7 +61,6 @@ async function cargarCatalogo() {
   CATALOGO = data;
   localStorage.setItem('catalogo', JSON.stringify(data));
   renderCatalogo();
-  populateAddForm();
 }
 
 // --- CARGAR COLECCIÓN DESDE SUPABASE ---
@@ -69,23 +78,18 @@ async function cargarColeccion() {
 // --- FILTROS Y PAGINACIÓN ---
 function getFilteredCatalogo() {
   const tipo = document.getElementById('filter-tipo')?.value || '';
-  const denom = (document.getElementById('filter-denominacion')?.value || '').toLowerCase();
+  const denom = (document.getElementById('search-input')?.value || '').toLowerCase();
   const anio = document.getElementById('filter-anio')?.value || '';
-  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
 
   return CATALOGO.filter(item => {
     const matchesTipo = !tipo || item.tipo === tipo;
     const matchesDenom = !denom || item.denominacion.toLowerCase().includes(denom);
     const matchesAnio = !anio || item.anio == anio;
-    const matchesSearch = !search ||
-      item.denominacion.toLowerCase().includes(search) ||
-      (item.tema && item.tema.toLowerCase().includes(search)) ||
-      (item.material && item.material.toLowerCase().includes(search));
-
-    return matchesTipo && matchesDenom && matchesAnio && matchesSearch;
+    return matchesTipo && matchesDenom && matchesAnio;
   }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
+// --- RENDERIZAR CATÁLOGO CON EDICIÓN Y ELIMINACIÓN ---
 function renderCatalogo() {
   const container = document.getElementById("section-catalogo");
   if (!container) return;
@@ -98,76 +102,77 @@ function renderCatalogo() {
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
   container.innerHTML = `
-    <div class="mb-6 bg-white p-4 rounded-lg shadow">
-      <div class="flex flex-col md:flex-row gap-4">
-        <div class="flex-1">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-          <div class="relative">
-            <input type="text" id="search-input" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md" placeholder="Buscar..." oninput="currentPage=1;renderCatalogo()">
-            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-        <div class="w-32">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-          <select id="filter-tipo" class="w-full border-gray-300 rounded-md" onchange="currentPage=1;renderCatalogo()">
-            <option value="">Todos</option>
-            <option value="Moneda">Moneda</option>
-            <option value="Billete">Billete</option>
-          </select>
-        </div>
-        <div class="w-32">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Año</label>
-          <input type="number" id="filter-anio" class="w-full border-gray-300 rounded-md" placeholder="2023" oninput="currentPage=1;renderCatalogo()">
-        </div>
-        <div class="w-48">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Denominación</label>
-          <input type="text" id="filter-denominacion" class="w-full border-gray-300 rounded-md" placeholder="$50" oninput="currentPage=1;renderCatalogo()">
-        </div>
+    <h2 class="section-title">Catálogo Numismático</h2>
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex-1 max-w-md">
+        <input type="text" id="search-input" placeholder="Buscar moneda o billete..." class="form-input w-full px-4 py-2 rounded-lg" oninput="currentPage=1;renderCatalogo()">
       </div>
+      <select id="filter-tipo" class="form-select px-4 py-2 rounded-lg bg-gray-700" onchange="currentPage=1;renderCatalogo()">
+        <option value="">Todos los tipos</option>
+        <option value="Moneda">Monedas</option>
+        <option value="Billete">Billetes</option>
+      </select>
     </div>
   `;
 
   if (paginatedItems.length === 0) {
-    container.innerHTML += '<p class="text-gray-500 text-center py-10">No se encontraron piezas.</p>';
+    container.innerHTML += '<p class="text-amber-200 text-center py-10">No se encontraron piezas.</p>';
     return;
   }
 
   const grid = document.createElement("div");
+  grid.id = "catalogo-grid";
   grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
   container.appendChild(grid);
 
   paginatedItems.forEach(item => {
     const tiene = coleccion.some(p => p.catalogo_id === item.id);
     const card = document.createElement("div");
-    card.className = `bg-white rounded-xl shadow-md overflow-hidden border-4 ${tiene ? "border-green-500" : "border-gray-200"} card`;
+    card.className = `card bg-gray-800 border-2 rounded-xl shadow-lg overflow-hidden ${tiene ? "border-green-500" : "border-gray-600"}`;
     card.innerHTML = `
       <div class="p-5">
-        <div class="flex justify-between items-start">
-          <h3 class="text-xl font-bold ${tiene ? "text-green-700" : "text-gray-800"}">${item.denominacion} (${item.anio})</h3>
-          <button onclick="marcarComoTengo('${item.id}')" class="ml-2 px-3 py-1 text-sm font-semibold rounded-full ${tiene ? "bg-green-100 text-green-800 cursor-not-allowed" : "bg-blue-100 text-blue-800 hover:bg-blue-200"}" ${tiene ? "disabled" : ""}>
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="text-xl font-bold ${tiene ? "text-green-300" : "text-amber-100"}">${item.denominacion} (${item.anio})</h3>
+          <button onclick="marcarComoTengo('${item.id}')" class="ml-2 px-3 py-1 text-sm font-semibold rounded-full ${tiene ? "bg-green-700 text-green-100 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" ${tiene ? "disabled" : ""}>
             ${tiene ? "✅ Tienes" : "➕ Añadir"}
           </button>
         </div>
-        <p class="text-sm text-gray-500"><strong>Tipo:</strong> ${item.tipo}</p>
-        <p class="text-sm text-gray-500"><strong>Tema:</strong> ${item.tema || "General"}</p>
-        <p class="text-sm text-gray-500"><strong>Material:</strong> ${item.material}</p>
-        <p class="text-sm text-gray-500"><strong>Rareza:</strong> ${item.rareza}</p>
-        <p class="text-sm text-gray-600 mt-2">${item.observaciones}</p>
+        <p class="text-sm text-amber-200"><strong>Tipo:</strong> ${item.tipo}</p>
+        <p class="text-sm text-amber-200"><strong>Material:</strong> ${item.material}</p>
+        <p class="text-sm text-amber-200"><strong>Tema:</strong> ${item.tema || "General"}</p>
+        <p class="text-sm text-amber-200"><strong>Rareza:</strong> ${item.rareza}</p>
+        <p class="text-sm text-amber-300 mt-2">${item.observaciones}</p>
+
+        <!-- Botones de editar/eliminar -->
+        <div class="mt-4 flex justify-end gap-2">
+          <button 
+            onclick="editarDenominacionDesdeCatalogo('${item.id}')" 
+            class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition"
+            title="Editar esta pieza">
+            ✏️ Editar
+          </button>
+          <button 
+            onclick="eliminarDenominacionDesdeCatalogo('${item.id}')" 
+            class="text-red-400 hover:text-red-300 text-sm font-medium transition"
+            title="Eliminar esta pieza">
+            🗑️ Eliminar
+          </button>
+        </div>
       </div>
     `;
     grid.appendChild(card);
   });
 
+  // Paginación
   const pagination = document.createElement("div");
-  pagination.className = "mt-8 flex justify-center items-center gap-4";
+  pagination.id = "catalogo-pagination";
+  pagination.className = "flex justify-center mt-8 space-x-2";
   pagination.innerHTML = `
-    <button onclick="prevPage(${totalPages})" class="px-4 py-2 bg-gray-300 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-400'}">
+    <button onclick="prevPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
       ← Anterior
     </button>
-    <span class="text-gray-700">Página ${currentPage} de ${totalPages || 1}</span>
-    <button onclick="nextPage(${totalPages})" class="px-4 py-2 bg-gray-300 rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-400'}">
+    <span class="text-amber-200">Página ${currentPage} de ${totalPages || 1}</span>
+    <button onclick="nextPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
       Siguiente →
     </button>
   `;
@@ -250,7 +255,7 @@ async function marcarComoTengo(id) {
   }
 }
 
-// --- ELIMINAR PIEZA ---
+// --- ELIMINAR PIEZA DE LA COLECCIÓN ---
 async function removePieza(id) {
   const { error } = await supabase.from('coleccion').delete().match({ id });
   if (error) {
@@ -258,12 +263,55 @@ async function removePieza(id) {
   } else {
     coleccion = coleccion.filter(p => p.id !== id);
     localStorage.setItem('miColeccion', JSON.stringify(coleccion));
+    renderColeccion();
   }
 }
 
-// --- INICIALIZAR AL CARGAR ---
+// --- EDITAR DENOMINACIÓN DESDE EL CATÁLOGO ---
+function editarDenominacionDesdeCatalogo(id) {
+  const item = CATALOGO.find(d => d.id === id);
+  if (!item) return;
+
+  document.getElementById('denom-tipo').value = item.tipo;
+  document.getElementById('denom-denominacion').value = item.denominacion;
+  document.getElementById('denom-anio').value = item.anio;
+  document.getElementById('denom-material').value = item.material;
+  document.getElementById('denom-tema').value = item.tema || '';
+  document.getElementById('denom-rareza').value = item.rareza;
+  document.getElementById('denom-observaciones').value = item.observaciones || '';
+
+  const btn = document.querySelector('#add-denominacion-form button[type="submit"]');
+  btn.textContent = 'Guardar Cambios';
+  btn.classList.remove('bg-purple-600');
+  btn.classList.add('bg-blue-600');
+
+  editandoId = id;
+  showSection('add-denominacion');
+}
+
+// --- ELIMINAR DENOMINACIÓN DESDE EL CATÁLOGO ---
+async function eliminarDenominacionDesdeCatalogo(id) {
+  const item = CATALOGO.find(d => d.id === id);
+  if (!item) return;
+
+  const confirmado = confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`);
+  if (!confirmado) return;
+
+  const { error } = await supabase.from('catalogo').delete().match({ id });
+  if (error) {
+    console.error('❌ Error al eliminar:', error);
+    alert('No se pudo eliminar la pieza');
+  } else {
+    CATALOGO = CATALOGO.filter(d => d.id !== id);
+    localStorage.setItem('catalogo', JSON.stringify(CATALOGO));
+    alert('🗑️ Denominación eliminada del catálogo.');
+    renderCatalogo();
+  }
+}
+
+// --- FORMULARIO DE AÑADIR/EDITAR ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Cargar datos desde localStorage (como respaldo)
+  // Cargar datos desde localStorage
   const savedCatalogo = localStorage.getItem('catalogo');
   if (savedCatalogo) CATALOGO = JSON.parse(savedCatalogo);
 
@@ -274,7 +322,52 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarCatalogo();
   cargarColeccion();
 
+  // Formulario
+  const form = document.getElementById('add-denominacion-form');
+  form.onsubmit = async function (e) {
+    e.preventDefault();
+
+    const tipo = document.getElementById('denom-tipo').value;
+    const denominacion = document.getElementById('denom-denominacion').value;
+    const anio = parseInt(document.getElementById('denom-anio').value);
+    const material = document.getElementById('denom-material').value;
+    const tema = document.getElementById('denom-tema').value || 'General';
+    const rareza = document.getElementById('denom-rareza').value;
+    const observaciones = document.getElementById('denom-observaciones').value || '';
+    const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
+
+    const id = editandoId || `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
+
+    const data = { id, tipo, denominacion, anio, material, tema, rareza, observaciones, valor };
+
+    if (editandoId) {
+      const { error } = await supabase.from('catalogo').update(data).match({ id });
+      if (error) {
+        alert('No se pudo actualizar');
+      } else {
+        const index = CATALOGO.findIndex(d => d.id === id);
+        if (index !== -1) CATALOGO[index] = data;
+        editandoId = null;
+        alert('✅ Actualizada');
+      }
+    } else {
+      const { error } = await supabase.from('catalogo').insert([data]);
+      if (error) {
+        alert('No se pudo insertar');
+      } else {
+        CATALOGO.push(data);
+        alert('✅ Añadida al catálogo');
+      }
+    }
+
+    localStorage.setItem('catalogo', JSON.stringify(CATALOGO));
+    form.reset();
+    document.querySelector('#add-denominacion-form button[type="submit"]').textContent = 'Añadir al Catálogo';
+    document.querySelector('#add-denominacion-form button[type="submit"]').classList.remove('bg-blue-600');
+    document.querySelector('#add-denominacion-form button[type="submit"]').classList.add('bg-purple-600');
+    showSection('catalogo');
+  };
+
   // Mostrar sección inicial
   showSection('catalogo');
 });
-
