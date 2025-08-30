@@ -87,8 +87,8 @@ function inicializarSelects() {
     selectDenom.appendChild(option);
   });
 
-  // Años únicos
-  const anios = [...new Set(CATALOGO.map(item => item.anio))].sort((a, b) => b - a);
+  // Años únicos (extraídos de fecha_emision)
+  const anios = [...new Set(CATALOGO.map(item => new Date(item.fecha_emision).getFullYear()))].sort((a, b) => b - a);
   anios.forEach(anio => {
     const option = document.createElement('option');
     option.value = anio;
@@ -112,14 +112,15 @@ async function cargarColeccion() {
 // --- FILTROS ---
 function getFilteredCatalogo() {
   return CATALOGO.filter(item => {
+    const anioEmision = new Date(item.fecha_emision).getFullYear();
     const matchesTipo = filtroTipo === 'todos' || item.tipo === filtroTipo;
     const matchesDenom = filtroDenominacion === 'todos' || item.denominacion === filtroDenominacion;
-    const matchesAnio = filtroAnio === 'todos' || item.anio == filtroAnio;
+    const matchesAnio = filtroAnio === 'todos' || anioEmision == filtroAnio;
     return matchesTipo && matchesDenom && matchesAnio;
-  }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
+  }).sort((a, b) => a.valor - b.valor || new Date(a.fecha_emision) - new Date(b.fecha_emision));
 }
 
-// --- FILTRAR POR TIPO (Moneda/Billete/Todos) ---
+// --- FILTRAR POR TIPO ---
 function filtrarPorTipo(tipo) {
   filtroTipo = tipo;
   resetButtons('tipo');
@@ -144,13 +145,11 @@ function filtrarPorAnio(anio) {
 
 // --- BORRAR TODOS LOS FILTROS ---
 function borrarFiltros() {
-  // Resetear filtros
   filtroTipo = 'todos';
   filtroDenominacion = 'todos';
   filtroAnio = 'todos';
   currentPage = 1;
 
-  // Resetear UI
   resetButtons('tipo');
   document.getElementById('btn-todos').classList.add('active');
 
@@ -189,17 +188,19 @@ function renderCatalogo() {
 
   paginatedItems.forEach(item => {
     const tiene = coleccion.some(p => p.catalogo_id === item.id);
+    const anioEmision = new Date(item.fecha_emision).getFullYear();
     const card = document.createElement("div");
     card.className = `card bg-white border-2 rounded-xl shadow-lg overflow-hidden ${tiene ? "border-blue-500" : "border-gray-600"}`;
     card.innerHTML = `
       <div class="p-5">
         <div class="flex justify-between items-start mb-3">
-          <h3 class="text-xl font-bold ${tiene ? "text-blue-600" : "text-blue-800"}">${item.denominacion} (${item.anio})</h3>
+          <h3 class="text-xl font-bold ${tiene ? "text-blue-600" : "text-blue-800"}">${item.denominacion} (${anioEmision})</h3>
           <button onclick="marcarComoTengo('${item.id}')" class="ml-2 px-3 py-1 text-sm font-semibold rounded-full ${tiene ? "bg-green-700 text-green-100 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" ${tiene ? "disabled" : ""}>
             ${tiene ? "✅ Tienes" : "➕ Añadir"}
           </button>
         </div>
         <p class="text-sm text-blue-800"><strong>Tipo:</strong> ${item.tipo}</p>
+        <p class="text-sm text-blue-800"><strong>Fecha emisión:</strong> ${new Date(item.fecha_emision).toLocaleDateString('es-ES')}</p>
         <p class="text-sm text-blue-800"><strong>Material:</strong> ${item.material}</p>
         <p class="text-sm text-blue-800"><strong>Tema:</strong> ${item.tema || "General"}</p>
         <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
@@ -271,21 +272,24 @@ function renderColeccion() {
     const catalogoItem = CATALOGO.find(c => c.id === item.catalogo_id);
     if (!catalogoItem) return;
 
+    const anioEmision = new Date(catalogoItem.fecha_emision).getFullYear();
+    const fechaAdquisicion = new Date(item.fecha_adquisicion).toLocaleDateString('es-ES');
     const card = document.createElement('div');
     card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300';
     card.innerHTML = `
       <div class="flex flex-col h-full">
         <div>
-          <h4 class="font-bold text-lg text-blue-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
+          <h4 class="font-bold text-lg text-blue-800">${catalogoItem.denominacion} (${anioEmision})</h4>
           <p class="text-sm text-blue-600 font-medium">${catalogoItem.tipo}</p>
           <div class="mt-3 space-y-1">
             <p class="text-sm text-gray-600"><strong>Material:</strong> ${catalogoItem.material}</p>
             <p class="text-sm text-gray-600"><strong>Tema:</strong> ${catalogoItem.tema || "General"}</p>
             <p class="text-sm text-gray-600"><strong>Rareza:</strong> ${catalogoItem.rareza}</p>
             <p class="text-sm text-gray-600"><strong>Valor:</strong> $${catalogoItem.valor?.toLocaleString()} COP</p>
+            <p class="text-sm text-gray-600"><strong>Emisión:</strong> ${new Date(catalogoItem.fecha_emision).toLocaleDateString('es-ES')}</p>
           </div>
           <div class="mt-4 acquisition-info">
-            <p><strong>Adquirida:</strong> ${item.anio || 'Sin año'}</p>
+            <p><strong>Adquirida:</strong> ${fechaAdquisicion}</p>
             <p><strong>Grado:</strong> ${item.grado} | <strong>Cant:</strong> ${item.cantidad}</p>
             <p><strong>Precio:</strong> $${item.precio_compra?.toLocaleString()} COP</p>
           </div>
@@ -311,7 +315,7 @@ async function marcarComoTengo(id) {
   const nuevaPieza = {
     id: Date.now().toString(),
     catalogo_id: id,
-    anio: new Date().getFullYear().toString(),
+    fecha_adquisicion: new Date().toISOString().split('T')[0], // YYYY-MM-DD
     grado: 'BU',
     cantidad: '1',
     precio_compra: '0'
@@ -349,7 +353,7 @@ function editarDenominacionDesdeCatalogo(id) {
 
   document.getElementById('denom-tipo').value = item.tipo;
   document.getElementById('denom-denominacion').value = item.denominacion;
-  document.getElementById('denom-anio').value = item.anio;
+  document.getElementById('denom-anio').value = new Date(item.fecha_emision).getFullYear();
   document.getElementById('denom-material').value = item.material;
   document.getElementById('denom-tema').value = item.tema || '';
   document.getElementById('denom-rareza').value = item.rareza;
@@ -369,7 +373,7 @@ async function eliminarDenominacionDesdeCatalogo(id) {
   const item = CATALOGO.find(d => d.id === id);
   if (!item) return;
 
-  const confirmado = confirm(`¿Eliminar "${item.denominacion} (${item.anio})" del catálogo?`);
+  const confirmado = confirm(`¿Eliminar "${item.denominacion}" del catálogo?`);
   if (!confirmado) return;
 
   const { error } = await supabase.from('catalogo').delete().match({ id });
@@ -411,9 +415,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const observaciones = document.getElementById('denom-observaciones').value || '';
     const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
 
+    // Fecha de emisión: primer día del año
+    const fecha_emision = `${anio}-01-01`;
+
     const id = editandoId || `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
 
-    const data = { id, tipo, denominacion, anio, material, tema, rareza, observaciones, valor };
+    const data = { id, tipo, denominacion, fecha_emision, material, tema, rareza, observaciones, valor };
 
     if (editandoId) {
       const { error } = await supabase.from('catalogo').update(data).match({ id });
