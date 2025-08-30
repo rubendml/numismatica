@@ -74,6 +74,10 @@ function inicializarSelects() {
   const selectDenom = document.getElementById('select-denominacion');
   const selectAnio = document.getElementById('select-anio');
 
+  // Limpiar selects
+  selectDenom.innerHTML = '<option value="todos">Todas</option>';
+  selectAnio.innerHTML = '<option value="todos">Todos</option>';
+
   // Denominaciones únicas
   const denominaciones = [...new Set(CATALOGO.map(item => item.denominacion))].sort();
   denominaciones.forEach(denom => {
@@ -175,8 +179,7 @@ function renderCatalogo() {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-// Limpia solo el contenido, pero mantiene las clases del grid
-document.getElementById('coleccion-items').innerHTML = '';
+  container.innerHTML = '';
 
   if (paginatedItems.length === 0) {
     container.innerHTML = '<p class="text-blue-800 text-center py-10">No se encontraron piezas con esos filtros.</p>';
@@ -254,7 +257,6 @@ function renderColeccion() {
   const container = document.getElementById('coleccion-items');
   if (!container) return;
 
-  // Limpiar contenido sin borrar el grid
   container.innerHTML = '';
 
   if (!coleccion || coleccion.length === 0) {
@@ -444,4 +446,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostrar sección inicial
   showSection('catalogo');
 });
-
