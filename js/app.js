@@ -3,13 +3,6 @@
 const SUPABASE_URL = 'https://sicrjwhjbwmbmcohydyr.supabase.co'; // ← Cambia esto
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpY3Jqd2hqYndtYm1jb2h5ZHlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY1MDAzNzksImV4cCI6MjA3MjA3NjM3OX0.fS7MONe-OE1hgT6qUVHBRhB-nR1da3I6UGs4n5VKVJk'; // ← Cambia esto
 
-// Validar credenciales
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('❌ Error: Faltan credenciales de Supabase');
-  alert('Error: Configuración de Supabase incorrecta. Contacta al administrador.');
-  throw new Error('Faltan credenciales de Supabase');
-}
-
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- CONFIGURACIÓN ---
@@ -24,57 +17,12 @@ let filtroTipo = 'todos';
 let filtroDenominacion = 'todos';
 let filtroAnio = 'todos';
 
-// --- AUTENTICACIÓN CON SUPABASE ---
-async function login() {
-  const email = document.getElementById('login-email')?.value;
-  const password = document.getElementById('login-password')?.value;
-  const errorElement = document.getElementById('login-error');
-
-  if (!email || !password || email.trim() === '' || password.trim() === '') {
-    errorElement.textContent = 'Completa ambos campos';
-    errorElement.classList.remove('hidden');
-    return;
-  }
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    console.error('❌ Error de login:', error);
-    errorElement.textContent = 'Correo o contraseña incorrectos';
-    errorElement.classList.remove('hidden');
-  } else {
-    console.log('✅ Login exitoso');
-    document.getElementById('login-modal').style.display = 'none';
-    cargarCatalogo();
-    cargarColeccion();
-  }
-}
-
-async function logout() {
-  await supabase.auth.signOut();
-  alert('Sesión cerrada');
-  location.reload();
-}
-
-async function checkSession() {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error || !session) {
-    document.getElementById('login-modal').style.display = 'flex';
-  } else {
-    document.getElementById('login-modal').style.display = 'none';
-    cargarCatalogo();
-    cargarColeccion();
-  }
-}
-
 // --- MOSTRAR SECCIÓN ---
 function showSection(section) {
   document.querySelectorAll('div[id^="section-"]').forEach(el => el.classList.add('hidden'));
   document.getElementById(`section-${section}`).classList.remove('hidden');
 
+  // Botones activos
   document.querySelectorAll('header button').forEach(btn => {
     btn.classList.remove('bg-blue-600', 'bg-blue-700', 'bg-purple-600');
     btn.classList.add('bg-gray-300');
@@ -117,18 +65,20 @@ async function cargarCatalogo() {
   }
   CATALOGO = data;
   localStorage.setItem('catalogo', JSON.stringify(data));
-  inicializarSelects();
+  inicializarSelects(); // Llenar selects con datos únicos
   renderCatalogo();
 }
 
-// --- INICIALIZAR SELECTS ---
+// --- INICIALIZAR SELECTS (denominaciones y años únicos) ---
 function inicializarSelects() {
   const selectDenom = document.getElementById('select-denominacion');
   const selectAnio = document.getElementById('select-anio');
 
+  // Limpiar selects
   selectDenom.innerHTML = '<option value="todos">Todas</option>';
   selectAnio.innerHTML = '<option value="todos">Todos</option>';
 
+  // Denominaciones únicas
   const denominaciones = [...new Set(CATALOGO.map(item => item.denominacion))].sort();
   denominaciones.forEach(denom => {
     const option = document.createElement('option');
@@ -137,6 +87,7 @@ function inicializarSelects() {
     selectDenom.appendChild(option);
   });
 
+  // Años únicos
   const anios = [...new Set(CATALOGO.map(item => item.anio))].sort((a, b) => b - a);
   anios.forEach(anio => {
     const option = document.createElement('option');
@@ -168,6 +119,7 @@ function getFilteredCatalogo() {
   }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
+// --- FILTRAR POR TIPO (Moneda/Billete/Todos) ---
 function filtrarPorTipo(tipo) {
   filtroTipo = tipo;
   resetButtons('tipo');
@@ -176,24 +128,29 @@ function filtrarPorTipo(tipo) {
   renderCatalogo();
 }
 
+// --- FILTRAR POR DENOMINACIÓN ---
 function filtrarPorDenominacion(denom) {
   filtroDenominacion = denom;
   currentPage = 1;
   renderCatalogo();
 }
 
+// --- FILTRAR POR AÑO ---
 function filtrarPorAnio(anio) {
   filtroAnio = anio;
   currentPage = 1;
   renderCatalogo();
 }
 
+// --- BORRAR TODOS LOS FILTROS ---
 function borrarFiltros() {
+  // Resetear filtros
   filtroTipo = 'todos';
   filtroDenominacion = 'todos';
   filtroAnio = 'todos';
   currentPage = 1;
 
+  // Resetear UI
   resetButtons('tipo');
   document.getElementById('btn-todos').classList.add('active');
 
@@ -203,6 +160,7 @@ function borrarFiltros() {
   renderCatalogo();
 }
 
+// --- REINICIAR BOTONES DE TIPO ---
 function resetButtons(type) {
   if (type === 'tipo') {
     document.getElementById('btn-todos').classList.remove('active');
@@ -246,15 +204,28 @@ function renderCatalogo() {
         <p class="text-sm text-blue-800"><strong>Tema:</strong> ${item.tema || "General"}</p>
         <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-blue-300 mt-2">${item.observaciones}</p>
+
+        <!-- Botones de editar/eliminar -->
         <div class="mt-4 flex justify-end gap-2">
-          <button onclick="editarDenominacionDesdeCatalogo('${item.id}')" class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition" title="Editar esta pieza">✏️ Editar</button>
-          <button onclick="eliminarDenominacionDesdeCatalogo('${item.id}')" class="text-red-400 hover:text-red-300 text-sm font-medium transition" title="Eliminar esta pieza">🗑️ Eliminar</button>
+          <button 
+            onclick="editarDenominacionDesdeCatalogo('${item.id}')" 
+            class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition"
+            title="Editar esta pieza">
+            ✏️ Editar
+          </button>
+          <button 
+            onclick="eliminarDenominacionDesdeCatalogo('${item.id}')" 
+            class="text-red-400 hover:text-red-300 text-sm font-medium transition"
+            title="Eliminar esta pieza">
+            🗑️ Eliminar
+          </button>
         </div>
       </div>
     `;
     container.appendChild(card);
   });
 
+  // Paginación
   const pagination = document.getElementById('catalogo-pagination');
   pagination.innerHTML = `
     <button onclick="prevPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
@@ -281,7 +252,7 @@ function nextPage(totalPages) {
   }
 }
 
-// --- MIS COLECCIÓN ---
+// --- MIS COLECCIÓN - Versión con 3-4 columnas ---
 function renderColeccion() {
   const container = document.getElementById('coleccion-items');
   if (!container) return;
@@ -415,6 +386,7 @@ async function eliminarDenominacionDesdeCatalogo(id) {
 
 // --- FORMULARIO DE AÑADIR/EDITAR ---
 document.addEventListener('DOMContentLoaded', () => {
+  // Cargar datos desde localStorage
   const savedCatalogo = localStorage.getItem('catalogo');
   if (savedCatalogo) CATALOGO = JSON.parse(savedCatalogo);
 
