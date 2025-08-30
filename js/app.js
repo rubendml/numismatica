@@ -34,15 +34,15 @@ function showSection(section) {
   if (section === 'catalogo') renderCatalogo();
   if (section === 'coleccion') renderColeccion();
   if (section === 'add-denominacion') {
-    // Reiniciar formulario
+    const btn = document.querySelector('#add-denominacion-form button[type="submit"]');
     if (editandoId) {
-      document.querySelector('#add-denominacion-form button[type="submit"]').textContent = 'Guardar Cambios';
-      document.querySelector('#add-denominacion-form button[type="submit"]').classList.remove('bg-purple-600');
-      document.querySelector('#add-denominacion-form button[type="submit"]').classList.add('bg-blue-600');
+      btn.textContent = 'Guardar Cambios';
+      btn.classList.remove('bg-purple-600');
+      btn.classList.add('bg-blue-600');
     } else {
-      document.querySelector('#add-denominacion-form button[type="submit"]').textContent = 'Añadir al Catálogo';
-      document.querySelector('#add-denominacion-form button[type="submit"]').classList.remove('bg-blue-600');
-      document.querySelector('#add-denominacion-form button[type="submit"]').classList.add('bg-purple-600');
+      btn.textContent = 'Añadir al Catálogo';
+      btn.classList.remove('bg-blue-600');
+      btn.classList.add('bg-purple-600');
     }
   }
 }
@@ -90,7 +90,7 @@ function getFilteredCatalogo() {
   }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
-// --- RENDERIZAR CATÁLOGO CON FILTROS Y PAGINACIÓN ---
+// --- RENDERIZAR CATÁLOGO CON FILTROS FUNCIONALES ---
 function renderCatalogo() {
   const container = document.getElementById("section-catalogo");
   if (!container) return;
@@ -111,13 +111,11 @@ function renderCatalogo() {
           id="search-input" 
           placeholder="Buscar moneda o billete..." 
           class="form-input w-full px-4 py-2 rounded-lg"
-          oninput="currentPage=1;renderCatalogo()"
         >
       </div>
       <select 
         id="filter-tipo" 
         class="form-select px-4 py-2 rounded-lg bg-gray-700"
-        onchange="currentPage=1;renderCatalogo()"
       >
         <option value="">Todos los tipos</option>
         <option value="Moneda">Monedas</option>
@@ -125,6 +123,20 @@ function renderCatalogo() {
       </select>
     </div>
   `;
+
+  // 🔥 Conectamos los eventos después de insertar el HTML
+  const searchInput = document.getElementById('search-input');
+  const filterTipo = document.getElementById('filter-tipo');
+
+  searchInput.addEventListener('input', () => {
+    currentPage = 1;
+    renderCatalogo();
+  });
+
+  filterTipo.addEventListener('change', () => {
+    currentPage = 1;
+    renderCatalogo();
+  });
 
   if (paginatedItems.length === 0) {
     container.innerHTML += '<p class="text-amber-200 text-center py-10">No se encontraron piezas.</p>';
@@ -204,7 +216,7 @@ function nextPage(totalPages) {
   }
 }
 
-// --- MIS COLECCIÓN ---
+// --- MIS COLECCIÓN - Versión mejorada con detalles y fecha ---
 function renderColeccion() {
   const container = document.getElementById('coleccion-items');
   if (!container) return;
@@ -218,18 +230,32 @@ function renderColeccion() {
 
   coleccion.forEach(item => {
     const catalogoItem = CATALOGO.find(c => c.id === item.catalogo_id);
-    const denominacion = catalogoItem ? catalogoItem.denominacion : item.denominacion;
+    if (!catalogoItem) return;
 
     const card = document.createElement('div');
-    card.className = 'bg-white p-4 rounded-lg shadow border-l-4 border-amber-500';
+    card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-amber-500';
     card.innerHTML = `
-      <div class="flex justify-between">
-        <div>
-          <h4 class="font-semibold">${denominacion} (${item.anio})</h4>
-          <p class="text-sm text-gray-600">Cantidad: ${item.cantidad} | Estado: ${item.grado}</p>
-          <p class="text-sm text-green-600">Compra: $${item.precio_compra?.toLocaleString() || 0} COP</p>
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+          <h4 class="font-bold text-lg text-gray-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
+          <p class="text-sm text-blue-600 font-medium">${catalogoItem.tipo}</p>
+          
+          <div class="mt-3 space-y-1">
+            <p class="text-sm text-gray-600"><strong>Material:</strong> ${catalogoItem.material}</p>
+            <p class="text-sm text-gray-600"><strong>Tema:</strong> ${catalogoItem.tema || "General"}</p>
+            <p class="text-sm text-gray-600"><strong>Rareza:</strong> ${catalogoItem.rareza}</p>
+            <p class="text-sm text-gray-600"><strong>Valor:</strong> $${catalogoItem.valor?.toLocaleString()} COP</p>
+          </div>
+
+          <div class="mt-4 acquisition-info">
+            <p><strong>Adquirida:</strong> ${item.anio || 'Sin año'} | <strong>Grado:</strong> ${item.grado} | <strong>Cantidad:</strong> ${item.cantidad}</p>
+            <p><strong>Precio:</strong> $${item.precio_compra?.toLocaleString()} COP</p>
+          </div>
         </div>
-        <button onclick="removePieza('${item.id}'); renderColeccion()" class="text-red-500 hover:text-red-700 text-xl">×</button>
+        <div class="flex flex-col justify-between">
+          <span class="feature-badge">${catalogoItem.rareza}</span>
+          <button onclick="removePieza('${item.id}'); renderColeccion()" class="text-red-500 hover:text-red-700 text-xl">×</button>
+        </div>
       </div>
     `;
     container.appendChild(card);
@@ -247,7 +273,7 @@ async function marcarComoTengo(id) {
   const nuevaPieza = {
     id: Date.now().toString(),
     catalogo_id: id,
-    anio: '2024',
+    anio: new Date().getFullYear().toString(),
     grado: 'BU',
     cantidad: '1',
     precio_compra: '0'
