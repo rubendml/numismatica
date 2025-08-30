@@ -78,18 +78,19 @@ async function cargarColeccion() {
 // --- FILTROS Y PAGINACIÓN ---
 function getFilteredCatalogo() {
   const tipo = document.getElementById('filter-tipo')?.value || '';
-  const denom = (document.getElementById('search-input')?.value || '').toLowerCase();
-  const anio = document.getElementById('filter-anio')?.value || '';
+  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
 
   return CATALOGO.filter(item => {
     const matchesTipo = !tipo || item.tipo === tipo;
-    const matchesDenom = !denom || item.denominacion.toLowerCase().includes(denom);
-    const matchesAnio = !anio || item.anio == anio;
-    return matchesTipo && matchesDenom && matchesAnio;
+    const matchesSearch = !search || 
+      item.denominacion.toLowerCase().includes(search) ||
+      item.tema?.toLowerCase().includes(search) ||
+      item.material?.toLowerCase().includes(search);
+    return matchesTipo && matchesSearch;
   }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
-// --- RENDERIZAR CATÁLOGO CON EDICIÓN Y ELIMINACIÓN ---
+// --- RENDERIZAR CATÁLOGO CON FILTROS Y PAGINACIÓN ---
 function renderCatalogo() {
   const container = document.getElementById("section-catalogo");
   if (!container) return;
@@ -105,9 +106,19 @@ function renderCatalogo() {
     <h2 class="section-title">Catálogo Numismático</h2>
     <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex-1 max-w-md">
-        <input type="text" id="search-input" placeholder="Buscar moneda o billete..." class="form-input w-full px-4 py-2 rounded-lg" oninput="currentPage=1;renderCatalogo()">
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="Buscar moneda o billete..." 
+          class="form-input w-full px-4 py-2 rounded-lg"
+          oninput="currentPage=1;renderCatalogo()"
+        >
       </div>
-      <select id="filter-tipo" class="form-select px-4 py-2 rounded-lg bg-gray-700" onchange="currentPage=1;renderCatalogo()">
+      <select 
+        id="filter-tipo" 
+        class="form-select px-4 py-2 rounded-lg bg-gray-700"
+        onchange="currentPage=1;renderCatalogo()"
+      >
         <option value="">Todos los tipos</option>
         <option value="Moneda">Monedas</option>
         <option value="Billete">Billetes</option>
@@ -371,4 +382,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostrar sección inicial
   showSection('catalogo');
 });
-
