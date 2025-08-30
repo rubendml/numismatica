@@ -65,7 +65,32 @@ async function cargarCatalogo() {
   }
   CATALOGO = data;
   localStorage.setItem('catalogo', JSON.stringify(data));
+  inicializarSelects(); // Llenar selects con datos únicos
   renderCatalogo();
+}
+
+// --- INICIALIZAR SELECTS (denominaciones y años únicos) ---
+function inicializarSelects() {
+  const selectDenom = document.getElementById('select-denominacion');
+  const selectAnio = document.getElementById('select-anio');
+
+  // Denominaciones únicas
+  const denominaciones = [...new Set(CATALOGO.map(item => item.denominacion))].sort();
+  denominaciones.forEach(denom => {
+    const option = document.createElement('option');
+    option.value = denom;
+    option.textContent = denom;
+    selectDenom.appendChild(option);
+  });
+
+  // Años únicos
+  const anios = [...new Set(CATALOGO.map(item => item.anio))].sort((a, b) => b - a);
+  anios.forEach(anio => {
+    const option = document.createElement('option');
+    option.value = anio;
+    option.textContent = anio;
+    selectAnio.appendChild(option);
+  });
 }
 
 // --- CARGAR COLECCIÓN DESDE SUPABASE ---
@@ -102,15 +127,6 @@ function filtrarPorTipo(tipo) {
 // --- FILTRAR POR DENOMINACIÓN ---
 function filtrarPorDenominacion(denom) {
   filtroDenominacion = denom;
-  resetButtons('denom');
-  const buttons = document.querySelectorAll('button[onclick^="filtrarPorDenominacion"]');
-  buttons.forEach(btn => {
-    if (btn.textContent === denom) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
   currentPage = 1;
   renderCatalogo();
 }
@@ -118,29 +134,34 @@ function filtrarPorDenominacion(denom) {
 // --- FILTRAR POR AÑO ---
 function filtrarPorAnio(anio) {
   filtroAnio = anio;
-  resetButtons('anio');
-  const buttons = document.querySelectorAll('button[onclick^="filtrarPorAnio"]');
-  buttons.forEach(btn => {
-    if (btn.textContent === anio.toString()) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
-  });
   currentPage = 1;
   renderCatalogo();
 }
 
-// --- REINICIAR BOTONES ---
+// --- BORRAR TODOS LOS FILTROS ---
+function borrarFiltros() {
+  // Resetear filtros
+  filtroTipo = 'todos';
+  filtroDenominacion = 'todos';
+  filtroAnio = 'todos';
+  currentPage = 1;
+
+  // Resetear UI
+  resetButtons('tipo');
+  document.getElementById('btn-todos').classList.add('active');
+
+  document.getElementById('select-denominacion').value = 'todos';
+  document.getElementById('select-anio').value = 'todos';
+
+  renderCatalogo();
+}
+
+// --- REINICIAR BOTONES DE TIPO ---
 function resetButtons(type) {
   if (type === 'tipo') {
     document.getElementById('btn-todos').classList.remove('active');
     document.getElementById('btn-moneda').classList.remove('active');
     document.getElementById('btn-billete').classList.remove('active');
-  } else if (type === 'denom') {
-    document.querySelectorAll('button[onclick^="filtrarPorDenominacion"]').forEach(btn => btn.classList.remove('active'));
-  } else if (type === 'anio') {
-    document.querySelectorAll('button[onclick^="filtrarPorAnio"]').forEach(btn => btn.classList.remove('active'));
   }
 }
 
