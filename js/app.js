@@ -17,6 +17,54 @@ let filtroTipo = 'todos';
 let filtroDenominacion = 'todos';
 let filtroAnio = 'todos';
 
+// --- AUTENTICACIÓN CON SUPABASE ---
+async function login() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const errorElement = document.getElementById('login-error');
+
+  if (!email || !password) || email.trim() === '' || password.trim() === '') {
+    errorElement.textContent = 'Completa ambos campos';
+    errorElement.classList.remove('hidden');
+    return;
+  }
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    console.error('❌ Error de login:', error);
+    errorElement.textContent = 'Correo o contraseña incorrectos';
+    errorElement.classList.remove('hidden');
+  } else {
+    console.log('✅ Login exitoso');
+    document.getElementById('login-modal').style.display = 'none';
+    cargarCatalogo();
+    cargarColeccion();
+  }
+}
+
+async function logout() {
+  await supabase.auth.signOut();
+  alert('Sesión cerrada');
+  location.reload();
+}
+
+async function checkSession() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (error || !session) {
+    // No hay sesión, mostrar login
+    document.getElementById('login-modal').style.display = 'flex';
+  } else {
+    // Hay sesión, cargar datos
+    document.getElementById('login-modal').style.display = 'none';
+    cargarCatalogo();
+    cargarColeccion();
+  }
+}
+
 // --- MOSTRAR SECCIÓN ---
 function showSection(section) {
   document.querySelectorAll('div[id^="section-"]').forEach(el => el.classList.add('hidden'));
@@ -205,14 +253,12 @@ function renderCatalogo() {
         <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-blue-300 mt-2">${item.observaciones}</p>
 
-        <!-- Botones de editar/eliminar -->
-        <div class="mt-4 flex justify-end gap-2">
+        <!-- Botones de editar/eliminar -->        <div class="mt-4 flex justify-end gap-2">
           <button 
             onclick="editarDenominacionDesdeCatalogo('${item.id}')" 
             class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition"
             title="Editar esta pieza">
-            ✏️ Editar
-          </button>
+            ✏️ Editar          </button>
           <button 
             onclick="eliminarDenominacionDesdeCatalogo('${item.id}')" 
             class="text-red-400 hover:text-red-300 text-sm font-medium transition"
