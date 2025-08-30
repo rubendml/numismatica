@@ -52,6 +52,27 @@
       color: white;
       box-shadow: 0 0 0 2px white inset;
     }
+    .btn-clear {
+      background-color: #FF8C00;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-clear:hover {
+      background-color: #E67E00;
+      transform: scale(1.02);
+    }
+    select.form-select {
+      background-color: #F0F8FF;
+      border-color: #005F8C;
+      color: #005F8C;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+    }
     .card {
       transition: all 0.3s ease;
       border: 1px solid rgba(0, 0, 0, 0.1);
@@ -132,34 +153,29 @@
       <h2 class="section-title">Catálogo Numismático</h2>
 
       <!-- Submenú de Filtros -->
-      <div class="mb-6 flex flex-wrap justify-center gap-2">
-        <button onclick="filtrarPorTipo('todos')" class="btn-filter active" id="btn-todos">Todos</button>
-        <button onclick="filtrarPorTipo('Moneda')" class="btn-filter" id="btn-moneda">Monedas</button>
-        <button onclick="filtrarPorTipo('Billete')" class="btn-filter" id="btn-billete">Billetes</button>
-      </div>
+      <div class="mb-6 flex flex-wrap items-center justify-center gap-4">
+        <div>
+          <span class="font-medium text-blue-800 mr-2">Tipo:</span>
+          <button onclick="filtrarPorTipo('todos')" id="btn-todos" class="btn-filter active">Todos</button>
+          <button onclick="filtrarPorTipo('Moneda')" id="btn-moneda" class="btn-filter">Monedas</button>
+          <button onclick="filtrarPorTipo('Billete')" id="btn-billete" class="btn-filter">Billetes</button>
+        </div>
 
-      <!-- Filtros por Denominación -->
-      <div class="mb-6 flex flex-wrap justify-center gap-2">
-        <span class="font-medium text-blue-800">Denominación:</span>
-        <button onclick="filtrarPorDenominacion('$50')" class="btn-filter">$50</button>
-        <button onclick="filtrarPorDenominacion('$100')" class="btn-filter">$100</button>
-        <button onclick="filtrarPorDenominacion('$200')" class="btn-filter">$200</button>
-        <button onclick="filtrarPorDenominacion('$500')" class="btn-filter">$500</button>
-        <button onclick="filtrarPorDenominacion('$1,000')" class="btn-filter">$1,000</button>
-        <button onclick="filtrarPorDenominacion('$2,000')" class="btn-filter">$2,000</button>
-        <button onclick="filtrarPorDenominacion('$5,000')" class="btn-filter">$5,000</button>
-        <button onclick="filtrarPorDenominacion('$10,000')" class="btn-filter">$10,000</button>
-        <button onclick="filtrarPorDenominacion('$100,000')" class="btn-filter">$100,000</button>
-      </div>
+        <div class="flex items-center gap-2">
+          <label for="select-denominacion" class="font-medium text-blue-800">Denominación:</label>
+          <select id="select-denominacion" class="form-select" onchange="filtrarPorDenominacion(this.value)">
+            <option value="todos">Todas</option>
+          </select>
+        </div>
 
-      <!-- Filtros por Año -->
-      <div class="mb-6 flex flex-wrap justify-center gap-2">
-        <span class="font-medium text-blue-800">Año:</span>
-        <button onclick="filtrarPorAnio(2024)" class="btn-filter">2024</button>
-        <button onclick="filtrarPorAnio(2023)" class="btn-filter">2023</button>
-        <button onclick="filtrarPorAnio(2022)" class="btn-filter">2022</button>
-        <button onclick="filtrarPorAnio(2021)" class="btn-filter">2021</button>
-        <button onclick="filtrarPorAnio(2020)" class="btn-filter">2020</button>
+        <div class="flex items-center gap-2">
+          <label for="select-anio" class="font-medium text-blue-800">Año:</label>
+          <select id="select-anio" class="form-select" onchange="filtrarPorAnio(this.value)">
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <button onclick="borrarFiltros()" class="btn-clear">🗑️ Borrar Filtros</button>
       </div>
 
       <!-- Contenedor de Tarjetas -->
