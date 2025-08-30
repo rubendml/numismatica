@@ -34,6 +34,24 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.15);
     }
+    .btn-filter {
+      background-color: #87CEEB;
+      color: #005F8C;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .btn-filter:hover {
+      background-color: #6bb9e0;
+      transform: translateY(-1px);
+    }
+    .btn-filter.active {
+      background-color: #005F8C;
+      color: white;
+      box-shadow: 0 0 0 2px white inset;
+    }
     .card {
       transition: all 0.3s ease;
       border: 1px solid rgba(0, 0, 0, 0.1);
@@ -47,20 +65,6 @@
       font-weight: 700;
       font-size: 1.875rem;
       margin-bottom: 1.5rem;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-    .form-input, .form-select {
-      background-color: #F0F8FF;
-      border-color: #005F8C;
-      color: #000;
-    }
-    .form-input::placeholder, .form-select {
-      color: #005F8C;
-    }
-    .form-input:focus, .form-select:focus {
-      border-color: #FFD700;
-      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
-      outline: none;
     }
     footer {
       background-color: #005F8C;
@@ -103,7 +107,7 @@
     </div>
   </header>
 
-  <!-- Navegación -->
+  <!-- Navegación Principal -->
   <nav class="bg-gray-900 shadow-lg sticky top-0 z-10">
     <div class="container mx-auto px-6 py-3">
       <div class="flex flex-wrap justify-center gap-3">
@@ -124,14 +128,55 @@
     </div>
 
     <!-- Sección Catálogo -->
-  <div id="section-catalogo" class="hidden"></div>
+    <div id="section-catalogo" class="hidden">
+      <h2 class="section-title">Catálogo Numismático</h2>
 
-    <!-- Sección Mi Colección -->  <div id="section-coleccion" class="hidden">
+      <!-- Submenú de Filtros -->
+      <div class="mb-6 flex flex-wrap justify-center gap-2">
+        <button onclick="filtrarPorTipo('todos')" class="btn-filter active" id="btn-todos">Todos</button>
+        <button onclick="filtrarPorTipo('Moneda')" class="btn-filter" id="btn-moneda">Monedas</button>
+        <button onclick="filtrarPorTipo('Billete')" class="btn-filter" id="btn-billete">Billetes</button>
+      </div>
+
+      <!-- Filtros por Denominación -->
+      <div class="mb-6 flex flex-wrap justify-center gap-2">
+        <span class="font-medium text-blue-800">Denominación:</span>
+        <button onclick="filtrarPorDenominacion('$50')" class="btn-filter">$50</button>
+        <button onclick="filtrarPorDenominacion('$100')" class="btn-filter">$100</button>
+        <button onclick="filtrarPorDenominacion('$200')" class="btn-filter">$200</button>
+        <button onclick="filtrarPorDenominacion('$500')" class="btn-filter">$500</button>
+        <button onclick="filtrarPorDenominacion('$1,000')" class="btn-filter">$1,000</button>
+        <button onclick="filtrarPorDenominacion('$2,000')" class="btn-filter">$2,000</button>
+        <button onclick="filtrarPorDenominacion('$5,000')" class="btn-filter">$5,000</button>
+        <button onclick="filtrarPorDenominacion('$10,000')" class="btn-filter">$10,000</button>
+        <button onclick="filtrarPorDenominacion('$100,000')" class="btn-filter">$100,000</button>
+      </div>
+
+      <!-- Filtros por Año -->
+      <div class="mb-6 flex flex-wrap justify-center gap-2">
+        <span class="font-medium text-blue-800">Año:</span>
+        <button onclick="filtrarPorAnio(2024)" class="btn-filter">2024</button>
+        <button onclick="filtrarPorAnio(2023)" class="btn-filter">2023</button>
+        <button onclick="filtrarPorAnio(2022)" class="btn-filter">2022</button>
+        <button onclick="filtrarPorAnio(2021)" class="btn-filter">2021</button>
+        <button onclick="filtrarPorAnio(2020)" class="btn-filter">2020</button>
+      </div>
+
+      <!-- Contenedor de Tarjetas -->
+      <div id="catalogo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <!-- Paginación -->
+      <div id="catalogo-pagination" class="flex justify-center mt-8 space-x-2"></div>
+    </div>
+
+    <!-- Sección Mi Colección -->
+    <div id="section-coleccion" class="hidden">
       <h2 class="section-title">Mi Colección</h2>
       <div id="coleccion-items" class="space-y-4"></div>
     </div>
 
-    <!-- Sección Añadir/Editar Denominación -->  <div id="section-add-denominacion" class="hidden">
+    <!-- Sección Añadir/Editar Denominación -->
+    <div id="section-add-denominacion" class="hidden">
       <h2 class="section-title">Añadir o Editar Denominación</h2>
       <form id="add-denominacion-form" class="bg-gray-800 p-6 rounded-xl shadow-lg space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
