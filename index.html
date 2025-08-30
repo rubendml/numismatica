@@ -128,8 +128,7 @@
     </div>
   </header>
 
-  <!-- Navegación Principal -->
-  <nav class="bg-gray-900 shadow-lg sticky top-0 z-10">
+  <!-- Navegación Principal -->  <nav class="bg-gray-900 shadow-lg sticky top-0 z-10">
     <div class="container mx-auto px-6 py-3">
       <div class="flex flex-wrap justify-center gap-3">
         <button onclick="showSection('catalogo')" class="btn-nav">🪙 Catálogo</button>
@@ -139,21 +138,17 @@
     </div>
   </nav>
 
-  <!-- Contenido Principal -->
-  <main class="container mx-auto px-4 py-6">
+  <!-- Contenido Principal -->  <main class="container mx-auto px-4 py-6">
 
-    <!-- Sección Home -->
-    <div id="section-home" class="text-center py-12">
+    <!-- Sección Home -->    <div id="section-home" class="text-center py-12">
       <h2 class="text-2xl font-semibold text-blue-800">Cargando tu colección...</h2>
       <p class="text-blue-200 mt-2">Bienvenido de vuelta, Rubén. Tu colección está a punto de cargarse.</p>
     </div>
 
-    <!-- Sección Catálogo -->
-    <div id="section-catalogo" class="hidden">
+    <!-- Sección Catálogo -->    <div id="section-catalogo" class="hidden">
       <h2 class="section-title">Catálogo Numismático</h2>
 
-      <!-- Submenú de Filtros -->
-      <div class="mb-6 flex flex-wrap items-center justify-center gap-4">
+      <!-- Submenú de Filtros -->      <div class="mb-6 flex flex-wrap items-center justify-center gap-4">
         <div>
           <span class="font-medium text-blue-800 mr-2">Tipo:</span>
           <button onclick="filtrarPorTipo('todos')" id="btn-todos" class="btn-filter active">Todos</button>
@@ -178,21 +173,17 @@
         <button onclick="borrarFiltros()" class="btn-clear">🗑️ Borrar Filtros</button>
       </div>
 
-      <!-- Contenedor de Tarjetas -->
-      <div id="catalogo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <!-- Contenedor de Tarjetas -->      <div id="catalogo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-      <!-- Paginación -->
-      <div id="catalogo-pagination" class="flex justify-center mt-8 space-x-2"></div>
+      <!-- Paginación -->      <div id="catalogo-pagination" class="flex justify-center mt-8 space-x-2"></div>
     </div>
 
-    <!-- Sección Mi Colección -->
-    <div id="section-coleccion" class="hidden">
+    <!-- Sección Mi Colección -->    <div id="section-coleccion" class="hidden">
       <h2 class="section-title">Mi Colección</h2>
       <div id="coleccion-items" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
     </div>
 
-    <!-- Sección Añadir/Editar Denominación -->
-    <div id="section-add-denominacion" class="hidden">
+    <!-- Sección Añadir/Editar Denominación -->    <div id="section-add-denominacion" class="hidden">
       <h2 class="section-title">Añadir o Editar Denominación</h2>
       <form id="add-denominacion-form" class="bg-gray-800 p-6 rounded-xl shadow-lg space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,8 +236,7 @@
 
   </main>
 
-  <!-- Footer -->
-  <footer class="text-center">
+  <!-- Footer -->  <footer class="text-center">
     <div class="container mx-auto px-6">
       <p class="text-sm">
         © 2025 Mi Colección Numismática — Rubén Darío Monroy León
@@ -257,8 +247,7 @@
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Scripts -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
