@@ -12,6 +12,11 @@ let editandoId = null;
 let CATALOGO = [];
 let coleccion = [];
 
+// Filtros activos
+let filtroTipo = 'todos';
+let filtroDenominacion = 'todos';
+let filtroAnio = 'todos';
+
 // --- MOSTRAR SECCIÓN ---
 function showSection(section) {
   document.querySelectorAll('div[id^="section-"]').forEach(el => el.classList.add('hidden'));
@@ -71,82 +76,91 @@ async function cargarColeccion() {
     return;
   }
   coleccion = data;
-  localStorage.setItem('miColeccion', JSON.stringify(data));
+  localStorage.setItem('miColeccion', JSON.stringify(coleccion));
   renderColeccion();
 }
 
-// --- FILTROS Y PAGINACIÓN ---
+// --- FILTROS ---
 function getFilteredCatalogo() {
-  const tipo = document.getElementById('filter-tipo')?.value || '';
-  const search = (document.getElementById('search-input')?.value || '').toLowerCase();
-
   return CATALOGO.filter(item => {
-    const matchesTipo = !tipo || item.tipo === tipo;
-    const matchesSearch = !search || 
-      item.denominacion.toLowerCase().includes(search) ||
-      item.tema?.toLowerCase().includes(search) ||
-      item.material?.toLowerCase().includes(search);
-    return matchesTipo && matchesSearch;
+    const matchesTipo = filtroTipo === 'todos' || item.tipo === filtroTipo;
+    const matchesDenom = filtroDenominacion === 'todos' || item.denominacion === filtroDenominacion;
+    const matchesAnio = filtroAnio === 'todos' || item.anio == filtroAnio;
+    return matchesTipo && matchesDenom && matchesAnio;
   }).sort((a, b) => a.valor - b.valor || a.anio - b.anio);
 }
 
-// --- RENDERIZAR CATÁLOGO CON FILTROS FUNCIONALES ---
+// --- FILTRAR POR TIPO (Moneda/Billete/Todos) ---
+function filtrarPorTipo(tipo) {
+  filtroTipo = tipo;
+  resetButtons('tipo');
+  document.getElementById(`btn-${tipo.toLowerCase()}`).classList.add('active');
+  currentPage = 1;
+  renderCatalogo();
+}
+
+// --- FILTRAR POR DENOMINACIÓN ---
+function filtrarPorDenominacion(denom) {
+  filtroDenominacion = denom;
+  resetButtons('denom');
+  const buttons = document.querySelectorAll('button[onclick^="filtrarPorDenominacion"]');
+  buttons.forEach(btn => {
+    if (btn.textContent === denom) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  currentPage = 1;
+  renderCatalogo();
+}
+
+// --- FILTRAR POR AÑO ---
+function filtrarPorAnio(anio) {
+  filtroAnio = anio;
+  resetButtons('anio');
+  const buttons = document.querySelectorAll('button[onclick^="filtrarPorAnio"]');
+  buttons.forEach(btn => {
+    if (btn.textContent === anio.toString()) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  currentPage = 1;
+  renderCatalogo();
+}
+
+// --- REINICIAR BOTONES ---
+function resetButtons(type) {
+  if (type === 'tipo') {
+    document.getElementById('btn-todos').classList.remove('active');
+    document.getElementById('btn-moneda').classList.remove('active');
+    document.getElementById('btn-billete').classList.remove('active');
+  } else if (type === 'denom') {
+    document.querySelectorAll('button[onclick^="filtrarPorDenominacion"]').forEach(btn => btn.classList.remove('active'));
+  } else if (type === 'anio') {
+    document.querySelectorAll('button[onclick^="filtrarPorAnio"]').forEach(btn => btn.classList.remove('active'));
+  }
+}
+
+// --- RENDERIZAR CATÁLOGO ---
 function renderCatalogo() {
-  const container = document.getElementById("section-catalogo");
+  const container = document.getElementById("catalogo-grid");
   if (!container) return;
-  container.classList.remove("hidden");
-  container.innerHTML = "";
 
   const filtered = getFilteredCatalogo();
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  container.innerHTML = `
-    <h2 class="section-title">Catálogo Numismático</h2>
-    <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="flex-1 max-w-md">
-        <input 
-          type="text" 
-          id="search-input" 
-          placeholder="Buscar moneda o billete..." 
-          class="form-input w-full px-4 py-2 rounded-lg"
-        >
-      </div>
-      <select 
-        id="filter-tipo" 
-        class="form-select px-4 py-2 rounded-lg bg-gray-700"
-      >
-        <option value="">Todos los tipos</option>
-        <option value="Moneda">Monedas</option>
-        <option value="Billete">Billetes</option>
-      </select>
-    </div>
-  `;
-
-  // 🔥 Conectamos los eventos después de insertar el HTML
-  const searchInput = document.getElementById('search-input');
-  const filterTipo = document.getElementById('filter-tipo');
-
-  searchInput.addEventListener('input', () => {
-    currentPage = 1;
-    renderCatalogo();
-  });
-
-  filterTipo.addEventListener('change', () => {
-    currentPage = 1;
-    renderCatalogo();
-  });
+  container.innerHTML = '';
 
   if (paginatedItems.length === 0) {
-    container.innerHTML += '<p class="text-blue-800 text-center py-10">No se encontraron piezas.</p>';
+    container.innerHTML = '<p class="text-blue-800 text-center py-10">No se encontraron piezas con esos filtros.</p>';
+    document.getElementById('catalogo-pagination').innerHTML = '';
     return;
   }
-
-  const grid = document.createElement("div");
-  grid.id = "catalogo-grid";
-  grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
-  container.appendChild(grid);
 
   paginatedItems.forEach(item => {
     const tiene = coleccion.some(p => p.catalogo_id === item.id);
@@ -183,13 +197,11 @@ function renderCatalogo() {
         </div>
       </div>
     `;
-    grid.appendChild(card);
+    container.appendChild(card);
   });
 
   // Paginación
-  const pagination = document.createElement("div");
-  pagination.id = "catalogo-pagination";
-  pagination.className = "flex justify-center mt-8 space-x-2";
+  const pagination = document.getElementById('catalogo-pagination');
   pagination.innerHTML = `
     <button onclick="prevPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
       ← Anterior
@@ -199,7 +211,6 @@ function renderCatalogo() {
       Siguiente →
     </button>
   `;
-  container.appendChild(pagination);
 }
 
 function prevPage(totalPages) {
@@ -216,7 +227,7 @@ function nextPage(totalPages) {
   }
 }
 
-// --- MIS COLECCIÓN - Versión mejorada con detalles y fecha ---
+// --- MIS COLECCIÓN ---
 function renderColeccion() {
   const container = document.getElementById('coleccion-items');
   if (!container) return;
@@ -239,14 +250,12 @@ function renderColeccion() {
         <div class="flex-1">
           <h4 class="font-bold text-lg text-blue-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
           <p class="text-sm text-blue-600 font-medium">${catalogoItem.tipo}</p>
-          
           <div class="mt-3 space-y-1">
             <p class="text-sm text-gray-600"><strong>Material:</strong> ${catalogoItem.material}</p>
             <p class="text-sm text-gray-600"><strong>Tema:</strong> ${catalogoItem.tema || "General"}</p>
             <p class="text-sm text-gray-600"><strong>Rareza:</strong> ${catalogoItem.rareza}</p>
             <p class="text-sm text-gray-600"><strong>Valor:</strong> $${catalogoItem.valor?.toLocaleString()} COP</p>
           </div>
-
           <div class="mt-4 acquisition-info">
             <p><strong>Adquirida:</strong> ${item.anio || 'Sin año'} | <strong>Grado:</strong> ${item.grado} | <strong>Cantidad:</strong> ${item.cantidad}</p>
             <p><strong>Precio:</strong> $${item.precio_compra?.toLocaleString()} COP</p>
