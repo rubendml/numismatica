@@ -175,7 +175,8 @@ function renderCatalogo() {
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedItems = filtered.slice(start, start + ITEMS_PER_PAGE);
 
-  container.innerHTML = '';
+// Limpia solo el contenido, pero mantiene las clases del grid
+document.getElementById('coleccion-items').innerHTML = '';
 
   if (paginatedItems.length === 0) {
     container.innerHTML = '<p class="text-blue-800 text-center py-10">No se encontraron piezas con esos filtros.</p>';
@@ -248,15 +249,19 @@ function nextPage(totalPages) {
   }
 }
 
-// --- MIS COLECCIÓN ---
+// --- MIS COLECCIÓN - Versión con 3-4 columnas ---
 function renderColeccion() {
   const container = document.getElementById('coleccion-items');
   if (!container) return;
 
+  // Limpiar contenido sin borrar el grid
   container.innerHTML = '';
 
   if (!coleccion || coleccion.length === 0) {
-    container.innerHTML = '<p class="text-gray-500">No tienes ninguna pieza aún.</p>';
+    const msg = document.createElement('div');
+    msg.className = 'col-span-full text-center py-10 text-gray-500';
+    msg.innerHTML = '<p>No tienes ninguna pieza aún.</p>';
+    container.appendChild(msg);
     return;
   }
 
@@ -265,10 +270,10 @@ function renderColeccion() {
     if (!catalogoItem) return;
 
     const card = document.createElement('div');
-    card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-blue-500';
+    card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300';
     card.innerHTML = `
-      <div class="flex flex-col md:flex-row gap-4">
-        <div class="flex-1">
+      <div class="flex flex-col h-full">
+        <div>
           <h4 class="font-bold text-lg text-blue-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
           <p class="text-sm text-blue-600 font-medium">${catalogoItem.tipo}</p>
           <div class="mt-3 space-y-1">
@@ -278,11 +283,12 @@ function renderColeccion() {
             <p class="text-sm text-gray-600"><strong>Valor:</strong> $${catalogoItem.valor?.toLocaleString()} COP</p>
           </div>
           <div class="mt-4 acquisition-info">
-            <p><strong>Adquirida:</strong> ${item.anio || 'Sin año'} | <strong>Grado:</strong> ${item.grado} | <strong>Cantidad:</strong> ${item.cantidad}</p>
+            <p><strong>Adquirida:</strong> ${item.anio || 'Sin año'}</p>
+            <p><strong>Grado:</strong> ${item.grado} | <strong>Cant:</strong> ${item.cantidad}</p>
             <p><strong>Precio:</strong> $${item.precio_compra?.toLocaleString()} COP</p>
           </div>
         </div>
-        <div class="flex flex-col justify-between">
+        <div class="mt-auto pt-4 flex justify-between items-center">
           <span class="feature-badge">${catalogoItem.rareza}</span>
           <button onclick="removePieza('${item.id}'); renderColeccion()" class="text-red-500 hover:text-red-700 text-xl">×</button>
         </div>
@@ -438,3 +444,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostrar sección inicial
   showSection('catalogo');
 });
+
