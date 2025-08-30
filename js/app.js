@@ -19,15 +19,15 @@ function showSection(section) {
 
   // Botones activos
   document.querySelectorAll('header button').forEach(btn => {
-    btn.classList.remove('bg-amber-600', 'bg-blue-600', 'bg-green-600', 'bg-purple-600');
+    btn.classList.remove('bg-blue-600', 'bg-blue-700', 'bg-purple-600');
     btn.classList.add('bg-gray-300');
   });
 
   const active = document.querySelector(`button[onclick="showSection('${section}')"]`);
   if (active) {
     active.classList.remove('bg-gray-300');
-    if (section === 'catalogo') active.classList.add('bg-amber-600');
-    if (section === 'coleccion') active.classList.add('bg-blue-600');
+    if (section === 'catalogo') active.classList.add('bg-blue-600');
+    if (section === 'coleccion') active.classList.add('bg-blue-700');
     if (section === 'add-denominacion') active.classList.add('bg-purple-600');
   }
 
@@ -139,7 +139,7 @@ function renderCatalogo() {
   });
 
   if (paginatedItems.length === 0) {
-    container.innerHTML += '<p class="text-amber-200 text-center py-10">No se encontraron piezas.</p>';
+    container.innerHTML += '<p class="text-blue-800 text-center py-10">No se encontraron piezas.</p>';
     return;
   }
 
@@ -151,20 +151,20 @@ function renderCatalogo() {
   paginatedItems.forEach(item => {
     const tiene = coleccion.some(p => p.catalogo_id === item.id);
     const card = document.createElement("div");
-    card.className = `card bg-gray-800 border-2 rounded-xl shadow-lg overflow-hidden ${tiene ? "border-green-500" : "border-gray-600"}`;
+    card.className = `card bg-white border-2 rounded-xl shadow-lg overflow-hidden ${tiene ? "border-blue-500" : "border-gray-600"}`;
     card.innerHTML = `
       <div class="p-5">
         <div class="flex justify-between items-start mb-3">
-          <h3 class="text-xl font-bold ${tiene ? "text-green-300" : "text-amber-100"}">${item.denominacion} (${item.anio})</h3>
+          <h3 class="text-xl font-bold ${tiene ? "text-blue-600" : "text-blue-800"}">${item.denominacion} (${item.anio})</h3>
           <button onclick="marcarComoTengo('${item.id}')" class="ml-2 px-3 py-1 text-sm font-semibold rounded-full ${tiene ? "bg-green-700 text-green-100 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}" ${tiene ? "disabled" : ""}>
             ${tiene ? "✅ Tienes" : "➕ Añadir"}
           </button>
         </div>
-        <p class="text-sm text-amber-200"><strong>Tipo:</strong> ${item.tipo}</p>
-        <p class="text-sm text-amber-200"><strong>Material:</strong> ${item.material}</p>
-        <p class="text-sm text-amber-200"><strong>Tema:</strong> ${item.tema || "General"}</p>
-        <p class="text-sm text-amber-200"><strong>Rareza:</strong> ${item.rareza}</p>
-        <p class="text-sm text-amber-300 mt-2">${item.observaciones}</p>
+        <p class="text-sm text-blue-800"><strong>Tipo:</strong> ${item.tipo}</p>
+        <p class="text-sm text-blue-800"><strong>Material:</strong> ${item.material}</p>
+        <p class="text-sm text-blue-800"><strong>Tema:</strong> ${item.tema || "General"}</p>
+        <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
+        <p class="text-sm text-blue-300 mt-2">${item.observaciones}</p>
 
         <!-- Botones de editar/eliminar -->
         <div class="mt-4 flex justify-end gap-2">
@@ -194,7 +194,7 @@ function renderCatalogo() {
     <button onclick="prevPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
       ← Anterior
     </button>
-    <span class="text-amber-200">Página ${currentPage} de ${totalPages || 1}</span>
+    <span class="text-blue-800">Página ${currentPage} de ${totalPages || 1}</span>
     <button onclick="nextPage(${totalPages})" class="px-4 py-2 bg-gray-600 rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-500'}">
       Siguiente →
     </button>
@@ -233,11 +233,11 @@ function renderColeccion() {
     if (!catalogoItem) return;
 
     const card = document.createElement('div');
-    card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-amber-500';
+    card.className = 'bg-white p-5 rounded-xl shadow-lg border-l-4 border-blue-500';
     card.innerHTML = `
       <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1">
-          <h4 class="font-bold text-lg text-gray-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
+          <h4 class="font-bold text-lg text-blue-800">${catalogoItem.denominacion} (${catalogoItem.anio})</h4>
           <p class="text-sm text-blue-600 font-medium">${catalogoItem.tipo}</p>
           
           <div class="mt-3 space-y-1">
