@@ -492,3 +492,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mostrar sección inicial
   showSection('catalogo');
 });
+
