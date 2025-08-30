@@ -4,18 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mi Colección Numismática</title>
-  <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Google Fonts - Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Estilos personalizados -->
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #4b3629, #3a2a1f, #5d4037);
+      background: linear-gradient(135deg, #005F8C, #87CEEB, #FFD700, #FF8C00);
       background-size: 400% 400%;
       animation: gradient 15s ease infinite;
-      color: #e6d5c3;
+      color: #000;
     }
     @keyframes gradient {
       0% { background-position: 0% 50%; }
@@ -23,8 +20,8 @@
       100% { background-position: 0% 50%; }
     }
     .btn-nav {
-      background-color: #1e40af;
-      color: #e6d5c3;
+      background-color: #005F8C;
+      color: white;
       border: none;
       padding: 0.75rem 1.5rem;
       border-radius: 0.75rem;
@@ -33,54 +30,54 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     .btn-nav:hover {
-      background-color: #1e3a8a;
+      background-color: #004B70;
       transform: translateY(-2px);
       box-shadow: 0 6px 8px -2px rgba(0, 0, 0, 0.15);
     }
     .card {
       transition: all 0.3s ease;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
     .card:hover {
       transform: translateY(-6px);
       box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.2);
     }
     .section-title {
-      color: #fde68a;
+      color: #005F8C;
       font-weight: 700;
       font-size: 1.875rem;
       margin-bottom: 1.5rem;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .form-input, .form-select {
-      background-color: #5c4033;
-      border-color: #7d5a4a;
-      color: #e6d5c3;
+      background-color: #F0F8FF;
+      border-color: #005F8C;
+      color: #000;
     }
     .form-input::placeholder, .form-select {
-      color: #b8a594;
+      color: #005F8C;
     }
     .form-input:focus, .form-select:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+      border-color: #FFD700;
+      box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
       outline: none;
     }
     footer {
-      background-color: #2c1810;
-      color: #b8a594;
+      background-color: #005F8C;
+      color: white;
       padding: 1.5rem 0;
       margin-top: 3rem;
-      border-top: 1px solid #4b3629;
+      border-top: 1px solid #87CEEB;
     }
     .acquisition-info {
       font-size: 0.875rem;
-      color: #fbbf24;
+      color: #FFD700;
       font-weight: 500;
     }
     .feature-badge {
-      background: rgba(251, 191, 36, 0.15);
-      border: 1px solid #fbbf24;
-      color: #fef3c7;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid #FFD700;
+      color: #FFD700;
       padding: 0.25rem 0.5rem;
       border-radius: 0.375rem;
       font-size: 0.75rem;
@@ -91,7 +88,7 @@
 <body class="min-h-screen">
 
   <!-- Header -->
-  <header class="bg-gradient-to-r from-amber-800 via-amber-700 to-orange-700 text-white shadow-2xl">
+  <header class="bg-gradient-to-r from-blue-700 via-blue-800 to-yellow-500 text-white shadow-2xl">
     <div class="container mx-auto px-6 py-5">
       <div class="flex items-center space-x-4">
         <img src="assets/logo.png" alt="Logo" class="w-16 h-16 rounded-full border-4 border-white shadow-lg">
@@ -122,53 +119,51 @@
 
     <!-- Sección Home -->
     <div id="section-home" class="text-center py-12">
-      <h2 class="text-2xl font-semibold text-amber-100">Cargando tu colección...</h2>
-      <p class="text-amber-200 mt-2">Bienvenido de vuelta, Rubén. Tu colección está a punto de cargarse.</p>
+      <h2 class="text-2xl font-semibold text-blue-800">Cargando tu colección...</h2>
+      <p class="text-blue-200 mt-2">Bienvenido de vuelta, Rubén. Tu colección está a punto de cargarse.</p>
     </div>
 
     <!-- Sección Catálogo -->
-    <div id="section-catalogo" class="hidden"></div>
+  <div id="section-catalogo" class="hidden"></div>
 
-    <!-- Sección Mi Colección -->
-    <div id="section-coleccion" class="hidden">
+    <!-- Sección Mi Colección -->  <div id="section-coleccion" class="hidden">
       <h2 class="section-title">Mi Colección</h2>
       <div id="coleccion-items" class="space-y-4"></div>
     </div>
 
-    <!-- Sección Añadir/Editar Denominación -->
-    <div id="section-add-denominacion" class="hidden">
+    <!-- Sección Añadir/Editar Denominación -->  <div id="section-add-denominacion" class="hidden">
       <h2 class="section-title">Añadir o Editar Denominación</h2>
       <form id="add-denominacion-form" class="bg-gray-800 p-6 rounded-xl shadow-lg space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Tipo</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Tipo</label>
             <select id="denom-tipo" class="form-select w-full px-4 py-2 rounded-lg" required>
               <option value="Moneda">Moneda</option>
               <option value="Billete">Billete</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Denominación</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Denominación</label>
             <input type="text" id="denom-denominacion" class="form-input w-full px-4 py-2 rounded-lg" placeholder="$100" required>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Año de Emisión</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Año de Emisión</label>
             <input type="number" id="denom-anio" class="form-input w-full px-4 py-2 rounded-lg" required>
           </div>
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Material</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Material</label>
             <input type="text" id="denom-material" class="form-input w-full px-4 py-2 rounded-lg" placeholder="Aluminio-bronce" required>
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Tema</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Tema</label>
             <input type="text" id="denom-tema" class="form-input w-full px-4 py-2 rounded-lg" placeholder="General">
           </div>
           <div>
-            <label class="block text-sm font-medium text-amber-100 mb-1">Rareza</label>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Rareza</label>
             <select id="denom-rareza" class="form-select w-full px-4 py-2 rounded-lg" required>
               <option value="Común">Común</option>
               <option value="Rara">Rara</option>
@@ -178,7 +173,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-amber-100 mb-1">Observaciones</label>
+          <label class="block text-sm font-medium text-blue-800 mb-1">Observaciones</label>
           <textarea id="denom-observaciones" class="form-input w-full px-4 py-2 rounded-lg" rows="2" placeholder="Detalles adicionales..."></textarea>
         </div>
         <button type="submit" class="btn-nav px-6 py-3 font-semibold">
