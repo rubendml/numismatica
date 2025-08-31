@@ -134,4 +134,131 @@
       <div class="flex flex-wrap justify-center gap-3">
         <button onclick="showSection('catalogo')" class="btn-nav">🪙 Catálogo</button>
         <button onclick="showSection('coleccion')" class="btn-nav">📦 Mi Colección</button>
-        <button onclick="showSection('add-denominacion')" class="btn-nav">✏️ Edit
+        <button onclick="showSection('add-denominacion')" class="btn-nav">✏️ Editar Denominación</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Contenido Principal -->
+  <main class="container mx-auto px-4 py-6">
+
+    <!-- Sección Home -->
+    <div id="section-home" class="text-center py-12">
+      <h2 class="text-2xl font-semibold text-blue-800">Cargando tu colección...</h2>
+      <p class="text-blue-200 mt-2">Bienvenido de vuelta, Rubén. Tu colección está a punto de cargarse.</p>
+    </div>
+
+    <!-- Sección Catálogo -->
+    <div id="section-catalogo" class="hidden">
+      <h2 class="section-title">Catálogo Numismático</h2>
+
+      <!-- Submenú de Filtros -->
+      <div class="mb-6 flex flex-wrap items-center justify-center gap-4">
+        <div>
+          <span class="font-medium text-blue-800 mr-2">Tipo:</span>
+          <button onclick="filtrarPorTipo('todos')" id="btn-todos" class="btn-filter active">Todos</button>
+          <button onclick="filtrarPorTipo('Moneda')" id="btn-moneda" class="btn-filter">Monedas</button>
+          <button onclick="filtrarPorTipo('Billete')" id="btn-billete" class="btn-filter">Billetes</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label for="select-denominacion" class="font-medium text-blue-800">Denominación:</label>
+          <select id="select-denominacion" class="form-select" onchange="filtrarPorDenominacion(this.value)">
+            <option value="todos">Todas</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label for="select-anio" class="font-medium text-blue-800">Año:</label>
+          <select id="select-anio" class="form-select" onchange="filtrarPorAnio(this.value)">
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <button onclick="borrarFiltros()" class="btn-clear">🗑️ Borrar Filtros</button>
+      </div>
+
+      <!-- Contenedor de Tarjetas -->
+      <div id="catalogo-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <!-- Paginación -->
+      <div id="catalogo-pagination" class="flex justify-center mt-8 space-x-2"></div>
+    </div>
+
+    <!-- Sección Mi Colección -->
+    <div id="section-coleccion" class="hidden">
+      <h2 class="section-title">Mi Colección</h2>
+      <div id="coleccion-items" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </div>
+
+    <!-- Sección Añadir/Editar Denominación -->
+    <div id="section-add-denominacion" class="hidden">
+      <h2 class="section-title">Añadir o Editar Denominación</h2>
+      <form id="add-denominacion-form" class="bg-gray-800 p-6 rounded-xl shadow-lg space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Tipo</label>
+            <select id="denom-tipo" class="form-select w-full px-4 py-2 rounded-lg" required>
+              <option value="Moneda">Moneda</option>
+              <option value="Billete">Billete</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Denominación</label>
+            <input type="text" id="denom-denominacion" class="form-input w-full px-4 py-2 rounded-lg" placeholder="$100" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Año de Emisión</label>
+            <input type="number" id="denom-anio" class="form-input w-full px-4 py-2 rounded-lg" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Material</label>
+            <input type="text" id="denom-material" class="form-input w-full px-4 py-2 rounded-lg" placeholder="Aluminio-bronce" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Tema</label>
+            <input type="text" id="denom-tema" class="form-input w-full px-4 py-2 rounded-lg" placeholder="General">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-blue-800 mb-1">Rareza</label>
+            <select id="denom-rareza" class="form-select w-full px-4 py-2 rounded-lg" required>
+              <option value="Común">Común</option>
+              <option value="Rara">Rara</option>
+              <option value="Muy rara">Muy rara</option>
+              <option value="Extremadamente rara">Extremadamente rara</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-blue-800 mb-1">Observaciones</label>
+          <textarea id="denom-observaciones" class="form-input w-full px-4 py-2 rounded-lg" rows="2" placeholder="Detalles adicionales..."></textarea>
+        </div>
+        <button type="submit" class="btn-nav px-6 py-3 font-semibold">
+          ➕ Añadir al Catálogo
+        </button>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container mx-auto px-6">
+      <p class="text-sm">
+        © 2025 Mi Colección Numismática — Rubén Darío Monroy León
+      </p>
+      <p class="text-xs mt-1">
+        Seguimiento de monedas y billetes circulantes en Colombia
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
