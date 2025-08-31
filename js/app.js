@@ -200,13 +200,14 @@ function renderCatalogo() {
           </button>
         </div>
         <p class="text-sm text-blue-800"><strong>Tipo:</strong> ${item.tipo}</p>
-        <p class="text-sm text-blue-800"><strong>Fecha emisión:</strong> ${new Date(item.fecha_emision).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+        <p class="text-sm text-blue-800"><strong>Fecha emisión:</strong> ${item.fecha_emision}</p>
         <p class="text-sm text-blue-800"><strong>Material:</strong> ${item.material}</p>
         <p class="text-sm text-blue-800"><strong>Tema:</strong> ${item.tema || "General"}</p>
         <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-blue-300 mt-2">${item.observaciones}</p>
 
-        <!-- Botones de editar/eliminar -->        <div class="mt-4 flex justify-end gap-2">
+        <!-- Botones de editar/eliminar -->
+        <div class="mt-4 flex justify-end gap-2">
           <button 
             onclick="editarDenominacionDesdeCatalogo('${item.id}')" 
             class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition"
@@ -285,7 +286,7 @@ function renderColeccion() {
             <p class="text-sm text-gray-600"><strong>Tema:</strong> ${catalogoItem.tema || "General"}</p>
             <p class="text-sm text-gray-600"><strong>Rareza:</strong> ${catalogoItem.rareza}</p>
             <p class="text-sm text-gray-600"><strong>Valor:</strong> $${catalogoItem.valor?.toLocaleString()} COP</p>
-            <p class="text-sm text-gray-600"><strong>Emisión:</strong> ${new Date(catalogoItem.fecha_emision).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+            <p class="text-sm text-gray-600"><strong>Emisión:</strong> ${catalogoItem.fecha_emision}</p>
           </div>
           <div class="mt-4 acquisition-info">
             <p><strong>Adquirida:</strong> ${fechaAdquisicion}</p>
