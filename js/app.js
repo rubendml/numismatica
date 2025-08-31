@@ -312,10 +312,14 @@ async function marcarComoTengo(id) {
     return;
   }
 
+  // Pedir fecha de adquisición
+  const fechaAdquisicion = prompt('¿En qué fecha adquiriste esta pieza? (formato: YYYY-MM-DD)', new Date().toISOString().split('T')[0]);
+  if (!fechaAdquisicion) return;
+
   const nuevaPieza = {
     id: Date.now().toString(),
     catalogo_id: id,
-    fecha_adquisicion: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+    fecha_adquisicion: fechaAdquisicion,
     grado: 'BU',
     cantidad: '1',
     precio_compra: '0'
@@ -353,7 +357,7 @@ function editarDenominacionDesdeCatalogo(id) {
 
   document.getElementById('denom-tipo').value = item.tipo;
   document.getElementById('denom-denominacion').value = item.denominacion;
-  document.getElementById('denom-anio').value = new Date(item.fecha_emision).getFullYear();
+  document.getElementById('denom-anio').value = item.fecha_emision; // Fecha completa
   document.getElementById('denom-material').value = item.material;
   document.getElementById('denom-tema').value = item.tema || '';
   document.getElementById('denom-rareza').value = item.rareza;
@@ -408,17 +412,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tipo = document.getElementById('denom-tipo').value;
     const denominacion = document.getElementById('denom-denominacion').value;
-    const anio = parseInt(document.getElementById('denom-anio').value);
+    const fecha_emision = document.getElementById('denom-anio').value; // Fecha completa
     const material = document.getElementById('denom-material').value;
     const tema = document.getElementById('denom-tema').value || 'General';
     const rareza = document.getElementById('denom-rareza').value;
     const observaciones = document.getElementById('denom-observaciones').value || '';
     const valor = parseFloat(denominacion.replace(/[^0-9.]/g, '')) || 0;
 
-    // Fecha de emisión: primer día del año
-    const fecha_emision = `${anio}-01-01`;
-
-    const id = editandoId || `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${anio}`;
+    const id = editandoId || `custom-${tipo.toLowerCase()}-${denominacion.replace(/\$/g, '').replace(',', '')}-${new Date(fecha_emision).getFullYear()}`;
 
     const data = { id, tipo, denominacion, fecha_emision, material, tema, rareza, observaciones, valor };
 
