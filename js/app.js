@@ -65,7 +65,7 @@ async function cargarCatalogo() {
   }
   CATALOGO = data;
   localStorage.setItem('catalogo', JSON.stringify(data));
-  inicializarSelects();
+  inicializarSelects(); // Llenar selects con datos únicos
   renderCatalogo();
 }
 
@@ -206,8 +206,7 @@ function renderCatalogo() {
         <p class="text-sm text-blue-800"><strong>Rareza:</strong> ${item.rareza}</p>
         <p class="text-sm text-blue-300 mt-2">${item.observaciones}</p>
 
-        <!-- Botones de editar/eliminar -->
-        <div class="mt-4 flex justify-end gap-2">
+        <!-- Botones de editar/eliminar -->        <div class="mt-4 flex justify-end gap-2">
           <button 
             onclick="editarDenominacionDesdeCatalogo('${item.id}')" 
             class="text-yellow-400 hover:text-yellow-300 text-sm font-medium transition"
